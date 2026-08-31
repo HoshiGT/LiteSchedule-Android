@@ -598,12 +598,16 @@ public class MainActivity extends Activity {
         hlp.topMargin = top;
         area.addView(handle, hlp);
 
+        final int[] currentStart = new int[]{start};
+        final int[] currentEnd = new int[]{end};
+        final float[] downY = new float[]{0};
+
         // 点击气泡中间加号进入新增课程页
         bubble.setOnClickListener(v -> {
             if (handle.getParent() == area) {
                 area.removeView(handle);
             }
-            openAddCourse(day, start, end);
+            openAddCourse(day, currentStart[0], currentEnd[0]);
         });
         bubble.setClickable(true);
         bubble.setFocusable(false);
@@ -617,8 +621,6 @@ public class MainActivity extends Activity {
         bubble.addView(plus, new FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
 
-        final int[] currentEnd = new int[]{end};
-        final float[] downY = new float[]{0};
         handle.setOnTouchListener((v, event) -> {
             switch (event.getActionMasked()) {
                 case MotionEvent.ACTION_DOWN:
@@ -627,16 +629,27 @@ public class MainActivity extends Activity {
                     return true;
                 case MotionEvent.ACTION_MOVE: {
                     int delta = (int) ((event.getRawY() - downY[0]) / rowH);
-                    int newEnd = clampSection(start + delta, 30);
-                    currentEnd[0] = newEnd;
-                    int newHeight = (int) ((newEnd - start + 1) * rowH - dp(12));
+                    if (delta > 0) {
+                        currentEnd[0] = Math.max(currentEnd[0],
+                                clampSection(currentStart[0] + delta, 30));
+                    } else if (delta < 0) {
+                        currentStart[0] = Math.min(currentStart[0],
+                                clampSection(currentStart[0] + delta, 30));
+                        if (currentEnd[0] < currentStart[0]) {
+                            currentEnd[0] = currentStart[0];
+                        }
+                    }
+                    int newHeight = (int) ((currentEnd[0] - currentStart[0] + 1) * rowH - dp(12));
+                    int newTop = (int) ((currentStart[0] - 1) * rowH + dp(6));
+
                     FrameLayout.LayoutParams newBubbleLp = (FrameLayout.LayoutParams) bubble.getLayoutParams();
+                    newBubbleLp.topMargin = newTop;
                     newBubbleLp.height = newHeight;
                     bubble.setLayoutParams(newBubbleLp);
 
                     FrameLayout.LayoutParams newHandleLp = (FrameLayout.LayoutParams) handle.getLayoutParams();
+                    newHandleLp.topMargin = newTop;
                     newHandleLp.height = newHeight;
-                    newHandleLp.topMargin = newBubbleLp.topMargin;
                     handle.setLayoutParams(newHandleLp);
                     return true;
                 }
@@ -648,7 +661,7 @@ public class MainActivity extends Activity {
                     if (handle.getParent() == area) {
                         area.removeView(handle);
                     }
-                    openAddCourse(day, start, currentEnd[0]);
+                    openAddCourse(day, currentStart[0], currentEnd[0]);
                     return true;
             }
             return true;
