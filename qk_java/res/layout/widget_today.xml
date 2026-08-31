@@ -56,7 +56,7 @@
 
     <TextView
         android:id="@+id/widget_empty"
-        android:text="今日无课  (´ー`)"
+        android:text="今日无课  (⁠*⁠´⁠ω⁠｀⁠*⁠)"
         android:textColor="#6B7280"
         android:textSize="12sp"
         android:gravity="center"
