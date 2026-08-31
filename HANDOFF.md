@@ -41,7 +41,7 @@
     - 新增“调整上课时间”设置页，可自定义每节课开始时间
     - 新增“设置开学日期”，主页显示“实际本周：第N周”；周次翻页和日期都基于开学第一周周一计算
     - 设置入口改为顶部齿轮；新增“赞赏 1 元解锁自定义背景”（微信赞赏二维码 + 设备码兑换激活码 + 预设背景切换 + 相册导入图片）
-    - 设置页新增“开源 / 赞赏”入口，跳转到 `open_source_url`（当前 `https://ai.hoshichan.moe`）
+    - 设置页新增“开源 / 赞赏”入口，跳转到 `open_source_url`（当前 `https://schedule.hoshichan.moe`）
     - 教务导入页新增“导入当前课表”按钮，可尝试从 WebView 当前页面解析课表表格写入本地数据库
     - WebView 已加 `DownloadListener`：点击教务“导出课表”时自动下载文件，若是 XML 会自动解析导入本地数据库
     - 教务导入页改为先打开 WebVPN 登录页，另加“打开教务课表”按钮进入内部课表页，避免直接加载 API 返回 JSON 未登录提示
@@ -175,13 +175,14 @@ cd build && zip -q base.apk classes.dex && cd ..
 
 ## 四、已知坑
 - `/home` 挂载是只读的，Gradle 默认用户目录不可写，所以新项目改为纯命令行构建，不用 Gradle。
-- 目前赞赏解锁是“在线优先、离线回退”方案：优先请求 `https://ai.hoshichan.moe/api/qingkebiao/unlock`；服务端未接入或断网时，回退到设备码/激活码离线解锁。离线 secret 写在 APK 里，防君子不防逆向；后续服务端接口稳定后可考虑只留联网验证。
+- 目前赞赏解锁是“在线优先、离线回退”方案：优先请求 `https://schedule.hoshichan.moe/api/qingkebiao/unlock`；服务端未接入或断网时，回退到设备码/激活码离线解锁。离线 secret 写在 APK 里，防君子不防逆向；后续服务端接口稳定后可考虑只留联网验证。
 - 在线解锁服务已部署在 `<服务器IP>`：
   - Node 服务：`/opt/qk-server/server.js`
   - 配置：`/opt/qk-server/config.json`（内含 adminToken）
   - 数据：`/opt/qk-server/unlocks.json`
   - systemd：`qk-unlock.service`
-  - Nginx 路径：`/api/qingkebiao/` 反代到 `127.0.0.1:8765`
+  - Nginx 路径：`/api/qingkebiao/` 反代到 `127.0.0.1:8765`（`ai.hoshichan.moe` 和 `schedule.hoshichan.moe` 都反代同一服务）
+  - `schedule.hoshichan.moe` 已配置 Let's Encrypt 证书并作为赞赏/开源主页，指向 `/var/www/schedule.hoshichan.moe/html`
   - 管理解锁：`POST /api/qingkebiao/mark?token=<adminToken>&device=<设备码>`
   - 支付回调预留：`POST /api/qingkebiao/pay/notify`，校验 `sign=HMAC-SHA256(paySecret, device|status)`，`status=success` 自动解锁
 - 服务端 API 暂按约定：
