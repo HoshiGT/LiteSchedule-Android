@@ -1,6 +1,7 @@
 package com.hoshi.qingkebiao;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
 import android.webkit.CookieManager;
@@ -9,6 +10,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -30,9 +32,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class WebImportActivity extends Activity {
-    private static final String LOGIN_URL = "https://webvpn.xaut.edu.cn/login";
-    private static final String SCHEDULE_URL =
-            "https://webvpn.xaut.edu.cn/http/77726476706e69737468656265737421fae04690692869456a468ca88d1b203b/jsxsd/framework/xsMain_10700.htmlx";
+    private static final String PREF_SCHOOL_URL = "school_url";
 
     private static final String IMPORT_JS =
             "(function() {" +
@@ -92,12 +92,18 @@ public class WebImportActivity extends Activity {
         setContentView(R.layout.activity_web_import);
         db = new CourseDatabase(this);
         web = findViewById(R.id.webview);
+        final EditText etUrl = findViewById(R.id.et_school_url);
+        SharedPreferences sp = getSharedPreferences("qingkebiao", MODE_PRIVATE);
+        String savedUrl = sp.getString(PREF_SCHOOL_URL, "");
+        etUrl.setText(savedUrl);
         WebSettings s = web.getSettings();
         s.setJavaScriptEnabled(true);
         s.setDomStorageEnabled(true);
         s.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         web.setWebViewClient(new WebViewClient());
-        web.loadUrl(LOGIN_URL);
+        if (savedUrl != null && !savedUrl.trim().isEmpty()) {
+            web.loadUrl(savedUrl.trim());
+        }
 
         // 拦截“导出课表”产生的下载，并把下载文件自动尝试识别为 XML 导入
         web.setDownloadListener((url, userAgent, contentDisposition, mimeType, contentLength) -> {
@@ -105,7 +111,19 @@ public class WebImportActivity extends Activity {
             downloadAndImport(url, userAgent, contentDisposition, mimeType);
         });
 
-        ((Button) findViewById(R.id.btn_open_schedule)).setOnClickListener(v -> web.loadUrl(SCHEDULE_URL));
+        ((Button) findViewById(R.id.btn_open_schedule)).setOnClickListener(v -> {
+            String url = etUrl.getText().toString().trim();
+            if (url.isEmpty()) {
+                Toast.makeText(this, "请先输入学校教务系统网址", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                url = "https://" + url;
+                etUrl.setText(url);
+            }
+            sp.edit().putString(PREF_SCHOOL_URL, url).apply();
+            web.loadUrl(url);
+        });
         ((Button) findViewById(R.id.btn_import_schedule)).setOnClickListener(v -> importCurrentPage());
     }
 

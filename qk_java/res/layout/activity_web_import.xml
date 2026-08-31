@@ -14,20 +14,35 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
-            android:text="教务导入（WebVPN）"
+            android:text="教务导入（自定义网址）"
             android:textColor="#FFFFFF"
             android:textSize="22sp"
             android:textStyle="bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <TextView
-            android:text="如需登录，请在下方页面完成。"
+            android:text="输入你自己学校的教务系统网址，登录后再导入课表。"
             android:textColor="#D9E0FF"
             android:textSize="13sp"
             android:paddingTop="4dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </LinearLayout>
+    <EditText
+        android:id="@+id/et_school_url"
+        android:hint="输入学校教务系统网址，如 https://jwxt.example.edu.cn"
+        android:textSize="14sp"
+        android:textColor="#2D3142"
+        android:textColorHint="#9AA3B5"
+        android:background="@drawable/bg_search_box"
+        android:padding="14dp"
+        android:inputType="textUri"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginTop="12dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <LinearLayout
         android:orientation="horizontal"
         android:paddingLeft="12dp"
@@ -38,7 +53,7 @@
         android:layout_height="wrap_content">
         <Button
             android:id="@+id/btn_open_schedule"
-            android:text="打开教务课表"
+            android:text="打开教务系统"
             android:textColor="#FFFFFF"
             android:background="@drawable/bg_button_dark"
             android:layout_width="0dp"
@@ -58,7 +73,7 @@
 
     <TextView
         android:id="@+id/tv_import_hint"
-        android:text="请先登录并打开课表页面，再点上面的导入按钮；也可以在教务系统里导出课表 XML 后，到导入页选择文件识别。"
+        android:text="请先输入学校教务网址并打开页面，再点导入；也可以在教务系统里导出 XLS/XML 后，到导入页选择文件识别。"
         android:textColor="#6B7280"
         android:textSize="13sp"
         android:paddingLeft="20dp"

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">轻课表</string>
+    <string name="app_name">LiteSchedule</string>
     <string name="title_add">添加课程</string>
     <string name="title_settings">设置</string>
     <string name="title_import">导入</string>

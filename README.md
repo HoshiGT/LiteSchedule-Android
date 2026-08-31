@@ -1,4 +1,4 @@
-# 轻课表 QingKebiao
+# LiteSchedule
 
 一个轻量、开源的 Android 课程表应用。
 

@@ -11,7 +11,7 @@
 - 设备：OnePlus 8T (KB2000)，已 root，无线 ADB `192.168.8.107:40877`
 - 已安装：
   - `com.suda.yzune.wakeupschedule` —— 魔改版 WakeUp课程表（原包名，新签名，能正常打开教务网页）
-  - `com.hoshi.qingkebiao` —— 新开发的“轻课表” v0.1 原型
+  - `com.hoshi.qingkebiao` —— 新开发的“LiteSchedule” v0.1 原型
 - 已卸载：
   - `com.hoshi.wakeupmin`（之前换包名导致 WebView 坏掉的版本）
   - 官方原版 WakeUp课程表（为了装魔改版被卸载）
@@ -28,7 +28,7 @@
     - 西安理工进入内部浏览器时强制使用 WebVPN HTTPS 地址
     - 原“捐赠”弹窗已加入 Hoshi 赞赏二维码
 - `/home/hoshi/Kebiao/qingkebiao_v0.1.apk`
-  - 新开发轻课表
+  - 新开发LiteSchedule
   - 包名：`com.hoshi.qingkebiao`
   - 功能：
     - 手动添加课程
@@ -77,7 +77,7 @@
   - 官方原包不能与魔改版共存，因为包名相同、签名不同。
   - 赞赏码：`/home/hoshi/Kebiao/mm_reward_qrcode_1788096589005.png`，已放入 `fragment_donate.xml`。
 
-## 三、轻课表新项目
+## 三、LiteSchedule新项目
 
 目录：`/home/hoshi/Kebiao/qk_java`
 

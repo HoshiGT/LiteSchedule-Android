@@ -3,6 +3,7 @@ package com.hoshi.qingkebiao;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -71,6 +72,7 @@ public class MainActivity extends Activity {
         ((Button) findViewById(R.id.btn_next_week)).setOnClickListener(v -> changeWeek(1));
         setupWeekPager();
         reload();
+        checkDonationMilestone();
     }
 
     private void setupWeekPager() {
@@ -464,6 +466,42 @@ public class MainActivity extends Activity {
         WeekViewHolder(View itemView) {
             super(itemView);
         }
+    }
+
+    private void checkDonationMilestone() {
+        SharedPreferences sp = getSharedPreferences("qingkebiao", MODE_PRIVATE);
+        long firstLaunch = sp.getLong("first_launch_time", 0);
+        if (firstLaunch == 0) {
+            firstLaunch = System.currentTimeMillis();
+            sp.edit().putLong("first_launch_time", firstLaunch).apply();
+            return;
+        }
+        int days = (int) ((System.currentTimeMillis() - firstLaunch) / (24L * 60 * 60 * 1000));
+        if (days >= 100 && !sp.getBoolean("donate_shown_100", false)) {
+            showDonationDialog(sp, 100);
+        } else if (days >= 50 && !sp.getBoolean("donate_shown_50", false)) {
+            showDonationDialog(sp, 50);
+        } else if (days >= 10 && !sp.getBoolean("donate_shown_10", false)) {
+            showDonationDialog(sp, 10);
+        }
+    }
+
+    private void showDonationDialog(final SharedPreferences sp, final int day) {
+        new AlertDialog.Builder(this)
+                .setTitle("感谢使用 LiteSchedule")
+                .setMessage("你已经使用我们的课表" + day + "天了，要是可以的话请考虑小小支持一下，一块也是可以的！毕竟为爱发电不容易嘛……")
+                .setPositiveButton("去支持", (d, w) -> {
+                    sp.edit().putBoolean("donate_shown_" + day, true).apply();
+                    try {
+                        startActivity(new Intent(Intent.ACTION_VIEW,
+                                android.net.Uri.parse(getString(R.string.open_source_url))));
+                    } catch (Exception ignored) {
+                    }
+                })
+                .setNegativeButton("以后再说", (d, w) ->
+                        sp.edit().putBoolean("donate_shown_" + day, true).apply())
+                .setCancelable(false)
+                .show();
     }
 
     private void applyBackground() {
