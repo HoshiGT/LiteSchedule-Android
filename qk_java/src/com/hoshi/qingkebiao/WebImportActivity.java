@@ -40,6 +40,11 @@ public class WebImportActivity extends Activity {
     private static final String PREF_SCHOOL_URL = "school_url";
     private static final String URL_XAUT_WEBVPN = "https://webvpn.xaut.edu.cn/login";
     private static final String URL_XAUT_DIRECT = "http://jwgl.xaut.edu.cn/jsxsd/sso.jsp";
+    private static final String DESKTOP_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
+            "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+    private static final String MOBILE_UA = "Mozilla/5.0 (Linux; Android 13; Pixel 7) " +
+            "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36";
+    private boolean desktopMode = true;
 
     private static final String IMPORT_JS =
             "(function() {" +
@@ -101,8 +106,12 @@ public class WebImportActivity extends Activity {
         web = findViewById(R.id.webview);
         final View controlsPanel = findViewById(R.id.controls_panel);
         final EditText etUrl = findViewById(R.id.et_school_url);
+        ((Button) findViewById(R.id.btn_toggle_ua)).setOnClickListener(v -> {
+            desktopMode = !desktopMode;
+            applyDisplayMode(true);
+        });
         ((Button) findViewById(R.id.btn_reset_zoom)).setOnClickListener(v -> {
-            web.setInitialScale(0);
+            web.setInitialScale(100);
             web.reload();
             Toast.makeText(this, "已重置页面缩放", Toast.LENGTH_SHORT).show();
         });
@@ -147,15 +156,10 @@ public class WebImportActivity extends Activity {
         s.setJavaScriptEnabled(true);
         s.setDomStorageEnabled(true);
         s.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-        // 模拟电脑浏览器，让教务系统返回桌面版页面
-        // 模拟 Edge/Chrome 电脑版：完整桌面布局 + 横向滚动，右半部分可通过滑动查看
-        s.setUseWideViewPort(true);
-        s.setLoadWithOverviewMode(false);
         s.setSupportZoom(true);
         s.setBuiltInZoomControls(true);
         s.setDisplayZoomControls(false);
-        s.setUserAgentString("Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
-                "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
+        applyDisplayMode(false);
         web.setWebViewClient(new WebViewClient());
         if (savedUrl != null && !savedUrl.trim().isEmpty()) {
             web.loadUrl(savedUrl.trim());
@@ -178,11 +182,31 @@ public class WebImportActivity extends Activity {
                 etUrl.setText(url);
             }
             sp.edit().putString(PREF_SCHOOL_URL, url).apply();
-            web.setInitialScale(0);
+            web.setInitialScale(desktopMode ? 100 : 100);
             web.loadUrl(url);
             controlsPanel.setVisibility(View.GONE);
         });
         ((Button) findViewById(R.id.btn_import_schedule)).setOnClickListener(v -> importCurrentPage());
+    }
+
+    private void applyDisplayMode(boolean reload) {
+        WebSettings s = web.getSettings();
+        if (desktopMode) {
+            s.setUserAgentString(DESKTOP_UA);
+            s.setUseWideViewPort(true);
+            s.setLoadWithOverviewMode(false);
+            web.setInitialScale(100);
+            ((Button) findViewById(R.id.btn_toggle_ua)).setText("手机版");
+        } else {
+            s.setUserAgentString(MOBILE_UA);
+            s.setUseWideViewPort(false);
+            s.setLoadWithOverviewMode(true);
+            web.setInitialScale(100);
+            ((Button) findViewById(R.id.btn_toggle_ua)).setText("电脑版");
+        }
+        if (reload && web.getUrl() != null) {
+            web.reload();
+        }
     }
 
     private void goHome() {
