@@ -148,14 +148,14 @@ public class WebImportActivity extends Activity {
         s.setDomStorageEnabled(true);
         s.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         // 模拟电脑浏览器，让教务系统返回桌面版页面
-        s.setUseWideViewPort(false);
-        s.setLoadWithOverviewMode(true);
+        // 模拟 Edge/Chrome 电脑版：完整桌面布局 + 横向滚动，右半部分可通过滑动查看
+        s.setUseWideViewPort(true);
+        s.setLoadWithOverviewMode(false);
         s.setSupportZoom(true);
         s.setBuiltInZoomControls(true);
         s.setDisplayZoomControls(false);
-        // 移动版页面通常会让顶部紫色横幅铺满屏幕
-        s.setUserAgentString("Mozilla/5.0 (Linux; Android 13; Pixel 7) " +
-                "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36");
+        s.setUserAgentString("Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
+                "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
         web.setWebViewClient(new WebViewClient());
         if (savedUrl != null && !savedUrl.trim().isEmpty()) {
             web.loadUrl(savedUrl.trim());
