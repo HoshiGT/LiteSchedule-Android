@@ -28,6 +28,17 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />
             <Button
+                android:id="@+id/btn_reset_zoom"
+                android:text="重置"
+                android:textColor="#FFFFFF"
+                android:background="@drawable/bg_button_dark"
+                android:layout_width="wrap_content"
+                android:layout_height="38dp"
+                android:minWidth="0dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:layout_marginRight="6dp" />
+            <Button
                 android:id="@+id/btn_toggle_controls"
                 android:text="设置网址"
                 android:textColor="#FFFFFF"

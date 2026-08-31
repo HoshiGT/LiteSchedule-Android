@@ -101,6 +101,11 @@ public class WebImportActivity extends Activity {
         web = findViewById(R.id.webview);
         final View controlsPanel = findViewById(R.id.controls_panel);
         final EditText etUrl = findViewById(R.id.et_school_url);
+        ((Button) findViewById(R.id.btn_reset_zoom)).setOnClickListener(v -> {
+            web.setInitialScale(0);
+            web.reload();
+            Toast.makeText(this, "已重置页面缩放", Toast.LENGTH_SHORT).show();
+        });
         ((Button) findViewById(R.id.btn_toggle_controls)).setOnClickListener(v -> {
             if (controlsPanel.getVisibility() == View.GONE) {
                 controlsPanel.setVisibility(View.VISIBLE);
@@ -173,6 +178,7 @@ public class WebImportActivity extends Activity {
                 etUrl.setText(url);
             }
             sp.edit().putString(PREF_SCHOOL_URL, url).apply();
+            web.setInitialScale(0);
             web.loadUrl(url);
             controlsPanel.setVisibility(View.GONE);
         });
