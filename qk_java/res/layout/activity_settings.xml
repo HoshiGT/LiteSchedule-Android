@@ -142,15 +142,40 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp">
             <TextView
-                android:text="开源 / 赞赏"
+                android:text="开源仓库"
                 android:textSize="16sp"
                 android:textColor="#2D3142"
                 android:padding="8dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
             <TextView
-                android:id="@+id/tv_open_source_hint"
-                android:text="GitHub 源码 &amp; 赞赏支持"
+                android:text="GitHub 源码：LiteSchedule-Android"
+                android:textColor="#6B7280"
+                android:textSize="13sp"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:paddingBottom="4dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_donate"
+            android:orientation="vertical"
+            android:background="@drawable/bg_card"
+            android:padding="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp">
+            <TextView
+                android:text="赞赏支持"
+                android:textSize="16sp"
+                android:textColor="#2D3142"
+                android:padding="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:text="一块也是可以的，感谢支持！"
                 android:textColor="#6B7280"
                 android:textSize="13sp"
                 android:paddingLeft="8dp"

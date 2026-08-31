@@ -55,6 +55,14 @@ public class SettingsActivity extends Activity {
                 Toast.makeText(this, "无法打开链接", Toast.LENGTH_SHORT).show();
             }
         });
+        ((android.view.View) findViewById(R.id.layout_donate)).setOnClickListener(v -> {
+            try {
+                startActivity(new Intent(Intent.ACTION_VIEW,
+                        Uri.parse(getString(R.string.donate_url))));
+            } catch (Exception e) {
+                Toast.makeText(this, "无法打开链接", Toast.LENGTH_SHORT).show();
+            }
+        });
         updateBackgroundHint();
 
         cb.setOnCheckedChangeListener((button, checked) -> {

@@ -6,5 +6,6 @@
     <string name="title_web">教务导入</string>
     <string name="title_file">文件导入</string>
     <string name="server_unlock_url">https://schedule.hoshichan.moe</string>
-    <string name="open_source_url">https://schedule.hoshichan.moe</string>
+    <string name="open_source_url">https://github.com/HoshiGT/LiteSchedule-Android</string>
+    <string name="donate_url">https://schedule.hoshichan.moe</string>
 </resources>
