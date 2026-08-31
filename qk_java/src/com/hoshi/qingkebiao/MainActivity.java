@@ -586,10 +586,14 @@ public class MainActivity extends Activity {
         area.addView(bubble, lp);
 
         // 拖钮改为气泡右侧外置竖条
-        final View handle = new View(this);
-        handle.setBackground(roundedBg(0xFFFFFFFF, 4));
+        final TextView handle = new TextView(this);
+        handle.setText("▲\n▼");
+        handle.setTextSize(9);
+        handle.setTextColor(0xFFFFFFFF);
+        handle.setGravity(Gravity.CENTER);
+        handle.setBackground(roundedBg(0xFF888888, 4));
         handle.setClickable(true);
-        FrameLayout.LayoutParams hlp = new FrameLayout.LayoutParams(dp(10), height, Gravity.NO_GRAVITY);
+        FrameLayout.LayoutParams hlp = new FrameLayout.LayoutParams(dp(16), height, Gravity.NO_GRAVITY);
         hlp.leftMargin = left + width + dp(3);
         hlp.topMargin = top;
         area.addView(handle, hlp);
@@ -619,6 +623,7 @@ public class MainActivity extends Activity {
             switch (event.getActionMasked()) {
                 case MotionEvent.ACTION_DOWN:
                     downY[0] = event.getRawY();
+                    v.getParent().requestDisallowInterceptTouchEvent(true);
                     return true;
                 case MotionEvent.ACTION_MOVE: {
                     int delta = (int) ((event.getRawY() - downY[0]) / rowH);
@@ -636,6 +641,7 @@ public class MainActivity extends Activity {
                     return true;
                 }
                 case MotionEvent.ACTION_UP:
+                    v.getParent().requestDisallowInterceptTouchEvent(false);
                     if (bubble.getParent() == area) {
                         area.removeView(bubble);
                     }
