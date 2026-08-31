@@ -4,40 +4,35 @@
     android:background="#F4F6FB"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <LinearLayout
         android:orientation="vertical"
         android:background="@drawable/bg_header"
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
-        android:paddingTop="18dp"
-        android:paddingBottom="18dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
-            android:text="教务导入（自定义网址）"
+            android:text="教务导入"
             android:textColor="#FFFFFF"
-            android:textSize="22sp"
+            android:textSize="20sp"
             android:textStyle="bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
-        <TextView
-            android:text="输入你自己学校的教务系统网址，登录后再导入课表。"
-            android:textColor="#D9E0FF"
-            android:textSize="13sp"
-            android:paddingTop="4dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
     </LinearLayout>
+
     <Spinner
         android:id="@+id/sp_school_preset"
         android:layout_marginLeft="12dp"
         android:layout_marginRight="12dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/bg_search_box"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:layout_width="match_parent"
-        android:layout_height="48dp" />
+        android:layout_height="44dp" />
 
     <EditText
         android:id="@+id/et_school_url"
@@ -46,11 +41,11 @@
         android:textColor="#2D3142"
         android:textColorHint="#9AA3B5"
         android:background="@drawable/bg_search_box"
-        android:padding="14dp"
+        android:padding="12dp"
         android:inputType="textUri"
         android:layout_marginLeft="12dp"
         android:layout_marginRight="12dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="8dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
@@ -58,7 +53,7 @@
         android:orientation="horizontal"
         android:paddingLeft="12dp"
         android:paddingRight="12dp"
-        android:paddingTop="12dp"
+        android:paddingTop="8dp"
         android:paddingBottom="0dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -68,7 +63,7 @@
             android:textColor="#FFFFFF"
             android:background="@drawable/bg_button_dark"
             android:layout_width="0dp"
-            android:layout_height="50dp"
+            android:layout_height="44dp"
             android:layout_weight="1"
             android:layout_marginRight="6dp" />
         <Button
@@ -77,21 +72,10 @@
             android:textColor="#FFFFFF"
             android:background="@drawable/bg_button_primary"
             android:layout_width="0dp"
-            android:layout_height="50dp"
+            android:layout_height="44dp"
             android:layout_weight="1"
             android:layout_marginLeft="6dp" />
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/tv_import_hint"
-        android:text="请先输入学校教务网址并打开页面，再点导入；也可以在教务系统里导出 XLS/XML 后，到导入页选择文件识别。"
-        android:textColor="#6B7280"
-        android:textSize="13sp"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:paddingBottom="8dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
 
     <WebView
         android:id="@+id/webview"
