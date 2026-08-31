@@ -4,13 +4,17 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
+import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.URLUtil;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -33,6 +37,8 @@ import java.util.regex.Pattern;
 
 public class WebImportActivity extends Activity {
     private static final String PREF_SCHOOL_URL = "school_url";
+    private static final String URL_XAUT_WEBVPN = "https://webvpn.xaut.edu.cn/login";
+    private static final String URL_XAUT_DIRECT = "http://jwgl.xaut.edu.cn/jsxsd/sso.jsp";
 
     private static final String IMPORT_JS =
             "(function() {" +
@@ -96,6 +102,33 @@ public class WebImportActivity extends Activity {
         SharedPreferences sp = getSharedPreferences("qingkebiao", MODE_PRIVATE);
         String savedUrl = sp.getString(PREF_SCHOOL_URL, "");
         etUrl.setText(savedUrl);
+
+        Spinner schoolSpinner = findViewById(R.id.sp_school_preset);
+        ArrayAdapter<String> presetAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_dropdown_item,
+                new String[]{"自定义网址", "西安理工大学（WebVPN）", "西安理工大学（教务直连）"});
+        schoolSpinner.setAdapter(presetAdapter);
+        int presetPos = 0;
+        if (savedUrl != null && savedUrl.contains("webvpn")) {
+            presetPos = 1;
+        } else if (savedUrl != null && savedUrl.contains("jwgl")) {
+            presetPos = 2;
+        }
+        schoolSpinner.setSelection(presetPos);
+        schoolSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position == 1) {
+                    etUrl.setText(URL_XAUT_WEBVPN);
+                } else if (position == 2) {
+                    etUrl.setText(URL_XAUT_DIRECT);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
         WebSettings s = web.getSettings();
         s.setJavaScriptEnabled(true);
         s.setDomStorageEnabled(true);

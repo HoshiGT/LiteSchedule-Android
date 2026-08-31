@@ -30,7 +30,7 @@
         android:layout_height="wrap_content">
         <Button
             android:id="@+id/btn_web"
-            android:text="教务导入（WebVPN）"
+            android:text="教务导入（自定义网址）"
             android:textColor="#FFFFFF"
             android:background="@drawable/bg_button_dark"
             android:layout_width="match_parent"

@@ -28,6 +28,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </LinearLayout>
+    <Spinner
+        android:id="@+id/sp_school_preset"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/bg_search_box"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="48dp" />
+
     <EditText
         android:id="@+id/et_school_url"
         android:hint="输入学校教务系统网址，如 https://jwxt.example.edu.cn"
