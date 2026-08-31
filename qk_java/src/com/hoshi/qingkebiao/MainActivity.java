@@ -600,9 +600,9 @@ public class MainActivity extends Activity {
                 FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
 
         final View handle = new View(this);
-        handle.setBackground(roundedBg(0xFFFFFFFF, 8));
-        FrameLayout.LayoutParams hlp = new FrameLayout.LayoutParams(dp(16), dp(16), Gravity.END | Gravity.CENTER_VERTICAL);
-        hlp.setMargins(0, 0, dp(6), 0);
+        handle.setBackground(roundedBg(0x80FFFFFF, 6));
+        FrameLayout.LayoutParams hlp = new FrameLayout.LayoutParams(dp(12), dp(12), Gravity.RIGHT | Gravity.CENTER_VERTICAL);
+        hlp.setMargins(0, 0, dp(4), 0);
         bubble.addView(handle, hlp);
 
         final int[] currentEnd = new int[]{end};
