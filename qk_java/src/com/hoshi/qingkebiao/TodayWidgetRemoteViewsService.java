@@ -17,6 +17,13 @@ public class TodayWidgetRemoteViewsService extends RemoteViewsService {
             0xFFD1C4E9, 0xFFF8BBD0, 0xFFD7CCC8,
             0xFFCFD8DC
     };
+    private static final int[] BUBBLE_BACKGROUNDS = {
+            R.drawable.widget_bubble_0, R.drawable.widget_bubble_1,
+            R.drawable.widget_bubble_2, R.drawable.widget_bubble_3,
+            R.drawable.widget_bubble_4, R.drawable.widget_bubble_5,
+            R.drawable.widget_bubble_6, R.drawable.widget_bubble_7,
+            R.drawable.widget_bubble_8, R.drawable.widget_bubble_9
+    };
 
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
@@ -63,8 +70,8 @@ public class TodayWidgetRemoteViewsService extends RemoteViewsService {
                 info = info + " · " + c.location;
             }
             item.setTextViewText(R.id.widget_course_info, info);
-            int color = COURSE_COLORS[Math.abs(c.name.hashCode()) % COURSE_COLORS.length];
-            item.setInt(R.id.widget_course_item, "setBackgroundColor", color);
+            int idx = Math.abs(c.name.hashCode()) % BUBBLE_BACKGROUNDS.length;
+            item.setInt(R.id.widget_course_item, "setBackgroundResource", BUBBLE_BACKGROUNDS[idx]);
             return item;
         }
 
