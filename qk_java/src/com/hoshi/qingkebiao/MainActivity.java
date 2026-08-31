@@ -233,11 +233,10 @@ public class MainActivity extends Activity {
         });
         dataArea.setClickable(true);
         dataArea.setOnClickListener(v -> {
-            if (bubbleHolder[0] != null) {
-                dataArea.removeView(bubbleHolder[0]);
-                bubbleHolder[0] = null;
+            // 点击空白只显示气泡，不立刻进入新增页；点气泡里的 + 或拖完成才进入
+            if (bubbleHolder[0] == null) {
+                bubbleHolder[0] = showQuickBubble(dataArea, quickDay[0], quickStart[0], quickEnd[0], rowH, colW);
             }
-            openAddCourse(quickDay[0], quickStart[0], quickEnd[0]);
         });
 
         content.addView(body);
@@ -585,6 +584,11 @@ public class MainActivity extends Activity {
         lp.leftMargin = left;
         lp.topMargin = top;
         area.addView(bubble, lp);
+
+        // 点击气泡中间加号进入新增课程页
+        bubble.setOnClickListener(v -> openAddCourse(day, start, end));
+        bubble.setClickable(true);
+        bubble.setFocusable(false);
 
         TextView plus = new TextView(this);
         plus.setText("+");
