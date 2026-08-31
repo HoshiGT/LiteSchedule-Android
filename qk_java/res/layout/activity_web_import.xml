@@ -64,7 +64,7 @@
 
     <TextView
         android:id="@+id/tv_mobile_hint"
-        android:text="手机版显示异常请切换至电脑版"
+        android:text="手机版如果显示异常请切换至电脑版"
         android:textColor="#FF6D3D"
         android:textSize="12sp"
         android:gravity="center"
