@@ -585,8 +585,21 @@ public class MainActivity extends Activity {
         lp.topMargin = top;
         area.addView(bubble, lp);
 
+        // 拖钮改为气泡右侧外置竖条
+        final View handle = new View(this);
+        handle.setBackground(roundedBg(0xAAFFFFFF, 3));
+        FrameLayout.LayoutParams hlp = new FrameLayout.LayoutParams(dp(6), height, Gravity.NO_GRAVITY);
+        hlp.leftMargin = left + width + dp(3);
+        hlp.topMargin = top;
+        area.addView(handle, hlp);
+
         // 点击气泡中间加号进入新增课程页
-        bubble.setOnClickListener(v -> openAddCourse(day, start, end));
+        bubble.setOnClickListener(v -> {
+            if (handle.getParent() == area) {
+                area.removeView(handle);
+            }
+            openAddCourse(day, start, end);
+        });
         bubble.setClickable(true);
         bubble.setFocusable(false);
 
@@ -598,12 +611,6 @@ public class MainActivity extends Activity {
         plus.setGravity(Gravity.CENTER);
         bubble.addView(plus, new FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
-
-        final View handle = new View(this);
-        handle.setBackground(roundedBg(0x80FFFFFF, 6));
-        FrameLayout.LayoutParams hlp = new FrameLayout.LayoutParams(dp(12), dp(12), Gravity.RIGHT | Gravity.CENTER_VERTICAL);
-        hlp.setMargins(0, 0, dp(4), 0);
-        bubble.addView(handle, hlp);
 
         final int[] currentEnd = new int[]{end};
         final float[] downY = new float[]{0};
@@ -617,14 +624,22 @@ public class MainActivity extends Activity {
                     int newEnd = clampSection(start + delta, 30);
                     currentEnd[0] = newEnd;
                     int newHeight = (int) ((newEnd - start + 1) * rowH - dp(12));
-                    FrameLayout.LayoutParams newLp = (FrameLayout.LayoutParams) bubble.getLayoutParams();
-                    newLp.height = newHeight;
-                    bubble.setLayoutParams(newLp);
+                    FrameLayout.LayoutParams newBubbleLp = (FrameLayout.LayoutParams) bubble.getLayoutParams();
+                    newBubbleLp.height = newHeight;
+                    bubble.setLayoutParams(newBubbleLp);
+
+                    FrameLayout.LayoutParams newHandleLp = (FrameLayout.LayoutParams) handle.getLayoutParams();
+                    newHandleLp.height = newHeight;
+                    newHandleLp.topMargin = newBubbleLp.topMargin;
+                    handle.setLayoutParams(newHandleLp);
                     return true;
                 }
                 case MotionEvent.ACTION_UP:
                     if (bubble.getParent() == area) {
                         area.removeView(bubble);
+                    }
+                    if (handle.getParent() == area) {
+                        area.removeView(handle);
                     }
                     openAddCourse(day, start, currentEnd[0]);
                     return true;
