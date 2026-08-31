@@ -214,25 +214,30 @@ public class MainActivity extends Activity {
             dataArea.addView(bubble, lp);
         }
 
-        // 点击空白处快速添加：存储点击位置，用可点击区域处理，避免被 ScrollView 吞掉
+        // 点击空白处快速添加：显示“+”气泡，右侧拖钮可调整节数
         final float[] lastTap = new float[2];
+        final int[] quickDay = new int[]{1};
+        final int[] quickStart = new int[]{1};
+        final int[] quickEnd = new int[]{1};
+        final View[] bubbleHolder = new View[1];
         dataArea.setOnTouchListener((v, event) -> {
-            if (event.getActionMasked() == MotionEvent.ACTION_DOWN
-                    || event.getActionMasked() == MotionEvent.ACTION_UP) {
+            if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
                 lastTap[0] = event.getX();
                 lastTap[1] = event.getY();
+                quickDay[0] = clampDay((int) (lastTap[0] / colW) + 1);
+                quickStart[0] = clampSection((int) (lastTap[1] / rowH) + 1, maxSec);
+                quickEnd[0] = quickStart[0];
+                bubbleHolder[0] = showQuickBubble(dataArea, quickDay[0], quickStart[0], quickEnd[0], rowH, colW);
             }
             return false;
         });
         dataArea.setClickable(true);
         dataArea.setOnClickListener(v -> {
-            int day = clampDay((int) (lastTap[0] / colW) + 1);
-            int startSec = clampSection((int) (lastTap[1] / rowH) + 1, maxSec);
-            Intent intent = new Intent(MainActivity.this, AddCourseActivity.class);
-            intent.putExtra("day", day);
-            intent.putExtra("start", startSec);
-            intent.putExtra("end", startSec);
-            startActivity(intent);
+            if (bubbleHolder[0] != null) {
+                dataArea.removeView(bubbleHolder[0]);
+                bubbleHolder[0] = null;
+            }
+            openAddCourse(quickDay[0], quickStart[0], quickEnd[0]);
         });
 
         content.addView(body);
@@ -566,6 +571,71 @@ public class MainActivity extends Activity {
                         sp.edit().putBoolean("donate_shown_" + day, true).apply())
                 .setCancelable(false)
                 .show();
+    }
+
+    private View showQuickBubble(final FrameLayout area, final int day, final int start, int end,
+                                  final int rowH, final float colW) {
+        final FrameLayout bubble = new FrameLayout(this);
+        bubble.setBackground(roundedBg(0x884C5C92, 10));
+        int left = (int) ((day - 1) * colW + dp(6));
+        int top = (int) ((start - 1) * rowH + dp(6));
+        int width = (int) (colW - dp(12));
+        int height = (int) ((end - start + 1) * rowH - dp(12));
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(width, height);
+        lp.leftMargin = left;
+        lp.topMargin = top;
+        area.addView(bubble, lp);
+
+        TextView plus = new TextView(this);
+        plus.setText("+");
+        plus.setTextSize(28);
+        plus.setTextColor(0xFFFFFFFF);
+        plus.setGravity(Gravity.CENTER);
+        bubble.addView(plus, new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+
+        final View handle = new View(this);
+        handle.setBackground(roundedBg(0xFFFFFFFF, 8));
+        FrameLayout.LayoutParams hlp = new FrameLayout.LayoutParams(dp(16), dp(16), Gravity.END | Gravity.CENTER_VERTICAL);
+        hlp.setMargins(0, 0, dp(6), 0);
+        bubble.addView(handle, hlp);
+
+        final int[] currentEnd = new int[]{end};
+        final float[] downY = new float[]{0};
+        handle.setOnTouchListener((v, event) -> {
+            switch (event.getActionMasked()) {
+                case MotionEvent.ACTION_DOWN:
+                    downY[0] = event.getRawY();
+                    return true;
+                case MotionEvent.ACTION_MOVE: {
+                    int delta = (int) ((event.getRawY() - downY[0]) / rowH);
+                    int newEnd = clampSection(start + delta, 30);
+                    currentEnd[0] = newEnd;
+                    int newHeight = (int) ((newEnd - start + 1) * rowH - dp(12));
+                    FrameLayout.LayoutParams newLp = (FrameLayout.LayoutParams) bubble.getLayoutParams();
+                    newLp.height = newHeight;
+                    bubble.setLayoutParams(newLp);
+                    return true;
+                }
+                case MotionEvent.ACTION_UP:
+                    if (bubble.getParent() == area) {
+                        area.removeView(bubble);
+                    }
+                    openAddCourse(day, start, currentEnd[0]);
+                    return true;
+            }
+            return true;
+        });
+
+        return bubble;
+    }
+
+    private void openAddCourse(int day, int start, int end) {
+        Intent intent = new Intent(MainActivity.this, AddCourseActivity.class);
+        intent.putExtra("day", day);
+        intent.putExtra("start", start);
+        intent.putExtra("end", end);
+        startActivity(intent);
     }
 
     private void applyBackground() {
