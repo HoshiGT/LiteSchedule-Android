@@ -100,23 +100,27 @@
         </LinearLayout>
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/tv_import_tip"
-        android:text="进入课表页面点击导出，软件会自动将 XML 文件转为课表"
-        android:textColor="#6B7280"
-        android:textSize="12sp"
-        android:gravity="center"
-        android:paddingTop="6dp"
-        android:paddingBottom="6dp"
-        android:paddingLeft="12dp"
-        android:paddingRight="12dp"
-        android:background="#F4F6FB"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <WebView
-        android:id="@+id/webview"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1">
+        <WebView
+            android:id="@+id/webview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+        <TextView
+            android:id="@+id/tv_import_tip"
+            android:text="进入课表页面点击导出，软件会自动将 XML 文件转为课表"
+            android:textColor="#4C5C92"
+            android:textSize="12sp"
+            android:gravity="center"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:background="#CCFFFFFF"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </FrameLayout>
 </LinearLayout>
