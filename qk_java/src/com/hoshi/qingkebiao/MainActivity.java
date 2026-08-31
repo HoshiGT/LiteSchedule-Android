@@ -214,50 +214,25 @@ public class MainActivity extends Activity {
             dataArea.addView(bubble, lp);
         }
 
-        // 点击空白处快速添加：显示临时气泡，上下拖动调整节数，松手进入新增课程页
-        dataArea.setOnTouchListener(new View.OnTouchListener() {
-            float downX, downY;
-            boolean bubbleShown;
-            TextView bubble;
-            int day, startSec, endSec;
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getActionMasked()) {
-                    case MotionEvent.ACTION_DOWN:
-                        downX = event.getX();
-                        downY = event.getY();
-                        day = clampDay((int) (downX / colW) + 1);
-                        startSec = clampSection((int) (downY / rowH) + 1, maxSec);
-                        endSec = startSec;
-                        bubble = showBubble(dataArea, downX, downY, day, startSec, endSec, rowH, colW);
-                        bubbleShown = true;
-                        return false;
-                    case MotionEvent.ACTION_MOVE:
-                        if (bubbleShown) {
-                            int deltaSec = (int) ((event.getY() - downY) / rowH);
-                            endSec = clampSection(startSec + deltaSec, maxSec);
-                            updateBubble(bubble, startSec, endSec, rowH);
-                        }
-                        return false;
-                    case MotionEvent.ACTION_UP:
-                        if (bubbleShown) {
-                            bubbleShown = false;
-                            if (bubble != null) dataArea.removeView(bubble);
-                            Intent intent = new Intent(MainActivity.this, AddCourseActivity.class);
-                            intent.putExtra("day", day);
-                            intent.putExtra("start", startSec);
-                            intent.putExtra("end", endSec);
-                            startActivity(intent);
-                        }
-                        return false;
-                    case MotionEvent.ACTION_CANCEL:
-                        if (bubbleShown && bubble != null) dataArea.removeView(bubble);
-                        bubbleShown = false;
-                        return false;
-                }
-                return false;
+        // 点击空白处快速添加：存储点击位置，用可点击区域处理，避免被 ScrollView 吞掉
+        final float[] lastTap = new float[2];
+        dataArea.setOnTouchListener((v, event) -> {
+            if (event.getActionMasked() == MotionEvent.ACTION_DOWN
+                    || event.getActionMasked() == MotionEvent.ACTION_UP) {
+                lastTap[0] = event.getX();
+                lastTap[1] = event.getY();
             }
+            return false;
+        });
+        dataArea.setClickable(true);
+        dataArea.setOnClickListener(v -> {
+            int day = clampDay((int) (lastTap[0] / colW) + 1);
+            int startSec = clampSection((int) (lastTap[1] / rowH) + 1, maxSec);
+            Intent intent = new Intent(MainActivity.this, AddCourseActivity.class);
+            intent.putExtra("day", day);
+            intent.putExtra("start", startSec);
+            intent.putExtra("end", startSec);
+            startActivity(intent);
         });
 
         content.addView(body);
