@@ -55,6 +55,15 @@
                 android:layout_height="wrap_content" />
         </HorizontalScrollView>
 
+        <TextView
+            android:text="周次"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#2D3142"
+            android:paddingTop="12dp"
+            android:paddingBottom="6dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
         <EditText
             android:id="@+id/et_weeks"
             android:hint="周次，如 1-16"
@@ -67,6 +76,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
+        <TextView
+            android:text="节次"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#2D3142"
+            android:paddingTop="12dp"
+            android:paddingBottom="6dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
