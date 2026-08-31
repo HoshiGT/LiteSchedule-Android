@@ -44,13 +44,15 @@
             android:layout_height="wrap_content" />
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/widget_courses_container"
-        android:orientation="vertical"
-        android:paddingTop="4dp"
+    <ListView
+        android:id="@+id/widget_list"
+        android:divider="@null"
+        android:dividerHeight="6dp"
+        android:scrollbars="none"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:layout_marginTop="4dp" />
 
     <TextView
         android:id="@+id/widget_empty"
@@ -58,7 +60,6 @@
         android:textColor="#6B7280"
         android:textSize="12sp"
         android:gravity="center"
-        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />

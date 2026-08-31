@@ -40,20 +40,9 @@ public class TodayWidgetProvider extends AppWidgetProvider {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_today);
         views.setTextViewText(R.id.widget_date, dateFmt.format(new Date()));
         views.setTextViewText(R.id.widget_week_day, "第" + currentWeek + "周 " + dayNames[weekDay]);
-        views.setViewVisibility(R.id.widget_empty, list.isEmpty() ? android.view.View.VISIBLE : android.view.View.GONE);
-
-        for (Course c : list) {
-            RemoteViews item = new RemoteViews(context.getPackageName(), R.layout.widget_course_item);
-            item.setTextViewText(R.id.widget_course_name, c.name);
-            String info = c.sectionText();
-            if (c.location != null && !c.location.isEmpty()) {
-                info = info + " · " + c.location;
-            }
-            item.setTextViewText(R.id.widget_course_info, info);
-            int color = COURSE_COLORS[Math.abs(c.name.hashCode()) % COURSE_COLORS.length];
-            item.setInt(R.id.widget_course_item, "setBackgroundColor", color);
-            views.addView(R.id.widget_courses_container, item);
-        }
+        views.setEmptyView(R.id.widget_list, R.id.widget_empty);
+        Intent serviceIntent = new Intent(context, TodayWidgetRemoteViewsService.class);
+        views.setRemoteAdapter(R.id.widget_list, serviceIntent);
 
         Intent open = new Intent(context, MainActivity.class);
         open.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
