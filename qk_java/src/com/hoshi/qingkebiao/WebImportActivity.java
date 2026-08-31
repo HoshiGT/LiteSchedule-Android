@@ -1,6 +1,7 @@
 package com.hoshi.qingkebiao;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
@@ -133,6 +134,11 @@ public class WebImportActivity extends Activity {
         s.setJavaScriptEnabled(true);
         s.setDomStorageEnabled(true);
         s.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+        s.setUseWideViewPort(true);
+        s.setLoadWithOverviewMode(true);
+        s.setSupportZoom(true);
+        s.setBuiltInZoomControls(true);
+        s.setDisplayZoomControls(false);
         web.setWebViewClient(new WebViewClient());
         if (savedUrl != null && !savedUrl.trim().isEmpty()) {
             web.loadUrl(savedUrl.trim());
@@ -158,6 +164,13 @@ public class WebImportActivity extends Activity {
             web.loadUrl(url);
         });
         ((Button) findViewById(R.id.btn_import_schedule)).setOnClickListener(v -> importCurrentPage());
+    }
+
+    private void goHome() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        finish();
     }
 
     private void importCurrentPage() {
@@ -198,6 +211,7 @@ public class WebImportActivity extends Activity {
                 runOnUiThread(() -> {
                     if (finalCount > 0) {
                         Toast.makeText(this, "已导入 " + finalCount + " 门课程", Toast.LENGTH_LONG).show();
+                        goHome();
                     } else {
                         Toast.makeText(this, "没有解析到课程，请确认当前是课表页面", Toast.LENGTH_LONG).show();
                     }
@@ -280,6 +294,7 @@ public class WebImportActivity extends Activity {
                 }
                 if (count > 0) {
                     Toast.makeText(this, "已从课表 XLS 导入 " + count + " 门课程", Toast.LENGTH_LONG).show();
+                    goHome();
                 } else {
                     Toast.makeText(this, "已下载，但没有解析到课程", Toast.LENGTH_LONG).show();
                 }
@@ -292,6 +307,7 @@ public class WebImportActivity extends Activity {
                 }
                 if (count > 0) {
                     Toast.makeText(this, "已从 XML 导入 " + count + " 门课程", Toast.LENGTH_LONG).show();
+                    goHome();
                 } else {
                     Toast.makeText(this, "已下载，但没有解析到课程 XML", Toast.LENGTH_LONG).show();
                 }
