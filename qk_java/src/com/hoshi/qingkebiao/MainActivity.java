@@ -513,7 +513,7 @@ public class MainActivity extends Activity {
                 content.setGravity(Gravity.CENTER);
                 content.setPadding(0, dp(40), 0, 0);
                 TextView empty = new TextView(MainActivity.this);
-                empty.setText("第" + week + "周暂无课程");
+                empty.setText("第" + week + "周暂无课程  (´・ω・`)");
                 empty.setTextSize(14);
                 empty.setTextColor(0xFF6B7280);
                 content.addView(empty);

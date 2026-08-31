@@ -120,7 +120,7 @@
         android:layout_height="0dp"
         android:layout_weight="1">
         <TextView
-            android:text="还没有课程"
+            android:text="还没有课程  (╥﹏╥)"
             android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="#2D3142"
@@ -129,7 +129,7 @@
             android:layout_height="wrap_content" />
         <TextView
             android:id="@+id/empty_hint"
-            android:text="去设置里导入文件，或使用教务导入"
+            android:text="去设置里导入文件，或使用教务导入  (T_T)"
             android:textSize="13sp"
             android:textColor="#6B7280"
             android:padding="4dp"
