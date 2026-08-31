@@ -587,8 +587,9 @@ public class MainActivity extends Activity {
 
         // 拖钮改为气泡右侧外置竖条
         final View handle = new View(this);
-        handle.setBackground(roundedBg(0xAAFFFFFF, 3));
-        FrameLayout.LayoutParams hlp = new FrameLayout.LayoutParams(dp(6), height, Gravity.NO_GRAVITY);
+        handle.setBackground(roundedBg(0xFFFFFFFF, 4));
+        handle.setClickable(true);
+        FrameLayout.LayoutParams hlp = new FrameLayout.LayoutParams(dp(10), height, Gravity.NO_GRAVITY);
         hlp.leftMargin = left + width + dp(3);
         hlp.topMargin = top;
         area.addView(handle, hlp);
@@ -605,7 +606,7 @@ public class MainActivity extends Activity {
 
         TextView plus = new TextView(this);
         plus.setText("+");
-        plus.setTextSize(40);
+        plus.setTextSize(20);
         plus.setTextColor(0xFFFFFFFF);
         plus.setTypeface(null, Typeface.BOLD);
         plus.setGravity(Gravity.CENTER);
