@@ -575,7 +575,7 @@ public class MainActivity extends Activity {
     private View showQuickBubble(final FrameLayout area, final int day, final int start, int end,
                                   final int rowH, final float colW) {
         final FrameLayout bubble = new FrameLayout(this);
-        bubble.setBackground(roundedBg(0x884C5C92, 10));
+        bubble.setBackground(roundedBg(0xFF4C5C92, 10));
         int left = (int) ((day - 1) * colW + dp(6));
         int top = (int) ((start - 1) * rowH + dp(6));
         int width = (int) (colW - dp(12));
@@ -592,8 +592,9 @@ public class MainActivity extends Activity {
 
         TextView plus = new TextView(this);
         plus.setText("+");
-        plus.setTextSize(28);
+        plus.setTextSize(40);
         plus.setTextColor(0xFFFFFFFF);
+        plus.setTypeface(null, Typeface.BOLD);
         plus.setGravity(Gravity.CENTER);
         bubble.addView(plus, new FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
