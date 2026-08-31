@@ -15,6 +15,13 @@ import java.util.List;
 import java.util.Locale;
 
 public class TodayWidgetProvider extends AppWidgetProvider {
+    private static final int[] COURSE_COLORS = {
+            0xFFFFCDD2, 0xFFFFE0B2, 0xFFFFF9C4,
+            0xFFC8E6C9, 0xFFB2DFDB, 0xFFBBDEFB,
+            0xFFD1C4E9, 0xFFF8BBD0, 0xFFD7CCC8,
+            0xFFCFD8DC
+    };
+
     @Override
     public void onUpdate(Context context, AppWidgetManager mgr, int[] ids) {
         updateAll(context);
@@ -25,11 +32,6 @@ public class TodayWidgetProvider extends AppWidgetProvider {
         int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK); // 1=Sun
         int weekDay = (day == 1) ? 7 : day - 1;
         List<Course> list = db.getByDay(weekDay);
-        StringBuilder sb = new StringBuilder();
-        for (Course c : list) {
-            sb.append(c.name).append(" ").append(c.sectionText()).append(" ").append(c.location).append("\n");
-        }
-        if (sb.length() == 0) sb.append("今日无课");
 
         int currentWeek = WeekDateManager.currentWeek(context);
         String[] dayNames = {"", "周一", "周二", "周三", "周四", "周五", "周六", "周日"};
@@ -38,7 +40,20 @@ public class TodayWidgetProvider extends AppWidgetProvider {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_today);
         views.setTextViewText(R.id.widget_date, dateFmt.format(new Date()));
         views.setTextViewText(R.id.widget_week_day, "第" + currentWeek + "周 " + dayNames[weekDay]);
-        views.setTextViewText(R.id.widget_courses, sb.toString());
+        views.setViewVisibility(R.id.widget_empty, list.isEmpty() ? android.view.View.VISIBLE : android.view.View.GONE);
+
+        for (Course c : list) {
+            RemoteViews item = new RemoteViews(context.getPackageName(), R.layout.widget_course_item);
+            item.setTextViewText(R.id.widget_course_name, c.name);
+            String info = c.sectionText();
+            if (c.location != null && !c.location.isEmpty()) {
+                info = info + " · " + c.location;
+            }
+            item.setTextViewText(R.id.widget_course_info, info);
+            int color = COURSE_COLORS[Math.abs(c.name.hashCode()) % COURSE_COLORS.length];
+            item.setInt(R.id.widget_course_item, "setBackgroundColor", color);
+            views.addView(R.id.widget_courses_container, item);
+        }
 
         Intent open = new Intent(context, MainActivity.class);
         open.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
