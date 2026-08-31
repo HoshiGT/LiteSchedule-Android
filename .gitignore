@@ -1,0 +1,24 @@
+# Build artifacts
+qk_java/build/
+qk_java/gen/
+qk_java/classes/
+*.log
+*.apk
+*.idsig
+*.keystore
+
+# Local / sensitive
+logcat_wakeup.log
+mm_reward_qrcode_*.png
+base.apk
+wakeup_local_min.apk
+wakeup_offline_min.apk
+qingkebiao_v0.1.apk
+
+# Gradle if used later
+.gradle/
+
+# Generated AndroidX merged resources (we use ax_res_lib/*.zip instead)
+qk_java/ax_res_merged/
+qingkebiao/local.properties
+qingkebiao/.gradle/

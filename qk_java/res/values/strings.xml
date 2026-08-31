@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">轻课表</string>
+    <string name="title_add">添加课程</string>
+    <string name="title_settings">设置</string>
+    <string name="title_import">导入</string>
+    <string name="title_web">教务导入</string>
+    <string name="title_file">文件导入</string>
+    <string name="server_unlock_url">https://ai.hoshichan.moe</string>
+    <string name="open_source_url">https://ai.hoshichan.moe</string>
+</resources>

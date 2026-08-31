@@ -1,0 +1,10 @@
+<resources>
+    <style name="Theme.QingKebiao" parent="@android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:colorPrimary">#4C5C92</item>
+        <item name="android:colorAccent">#FF6D3D</item>
+        <item name="android:windowBackground">#F4F6FB</item>
+        <item name="android:navigationBarColor">#FFFFFF</item>
+        <item name="android:statusBarColor">#3A4773</item>
+        <item name="android:textColorPrimary">#2D3142</item>
+    </style>
+</resources>

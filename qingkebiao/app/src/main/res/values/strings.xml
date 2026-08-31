@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">轻课表</string>
+    <string name="settings">设置</string>
+    <string name="add_course">添加课程</string>
+    <string name="import">导入</string>
+    <string name="web_import">教务导入</string>
+    <string name="file_import">文件导入</string>
+</resources>

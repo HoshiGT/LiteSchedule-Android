@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="#F4F6FB"
+    android:id="@+id/bg_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:background="@drawable/bg_header"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingTop="18dp"
+        android:paddingBottom="18dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:text="自定义背景"
+            android:textColor="#FFFFFF"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_lock_status"
+        android:text=""
+        android:textSize="15sp"
+        android:textColor="#2D3142"
+        android:padding="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:id="@+id/lock_panel"
+        android:orientation="vertical"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/img_qr"
+            android:src="@drawable/mm_reward_qrcode"
+            android:adjustViewBounds="true"
+            android:maxHeight="260dp"
+            android:padding="12dp"
+            android:background="@drawable/bg_card"
+            android:layout_marginBottom="12dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:text="服务端已标记解锁时会自动生效；否则可把下方设备码发给作者，输入激活码或凭证完成解锁。"
+            android:textColor="#6B7280"
+            android:textSize="13sp"
+            android:paddingBottom="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_search_box"
+            android:padding="12dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:text="设备码："
+                android:textColor="#6B7280"
+                android:textSize="14sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/tv_device_code"
+                android:text="--------"
+                android:textColor="#2D3142"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+            <Button
+                android:id="@+id/btn_copy_device"
+                android:text="复制"
+                android:textColor="#4C5C92"
+                android:background="@drawable/bg_button_secondary"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:minWidth="0dp"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp" />
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/et_activation"
+            android:hint="输入激活码 / 订单号 / 凭证"
+            android:inputType="text"
+            android:textSize="15sp"
+            android:textColor="#2D3142"
+            android:textColorHint="#9AA3B5"
+            android:background="@drawable/bg_search_box"
+            android:padding="14dp"
+            android:layout_marginTop="12dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/btn_unlock"
+            android:text="验证解锁"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/bg_button_primary"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="16dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/unlocked_panel"
+        android:orientation="vertical"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="24dp"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_choose"
+            android:text="选择背景"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#2D3142"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:id="@+id/bg_options"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/btn_choose_image"
+            android:text="从相册选择图片作为背景"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/bg_button_dark"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="12dp" />
+
+        <TextView
+            android:text="图片会保存到本机，仅作为 App 背景使用。"
+            android:textColor="#6B7280"
+            android:textSize="13sp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/img_custom_preview"
+            android:adjustViewBounds="true"
+            android:maxHeight="300dp"
+            android:background="@drawable/bg_card"
+            android:padding="8dp"
+            android:layout_marginTop="8dp"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+</LinearLayout>
