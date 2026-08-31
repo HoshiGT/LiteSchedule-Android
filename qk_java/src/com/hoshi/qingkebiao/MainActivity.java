@@ -629,15 +629,19 @@ public class MainActivity extends Activity {
                     return true;
                 case MotionEvent.ACTION_MOVE: {
                     int delta = (int) ((event.getRawY() - downY[0]) / rowH);
+                    int baseStart = start;
+                    int baseEnd = end;
                     if (delta > 0) {
-                        currentEnd[0] = Math.max(currentEnd[0],
-                                clampSection(currentStart[0] + delta, 30));
+                        currentStart[0] = baseStart;
+                        currentEnd[0] = Math.max(baseEnd,
+                                clampSection(baseStart + delta, 30));
                     } else if (delta < 0) {
-                        currentStart[0] = Math.min(currentStart[0],
-                                clampSection(currentStart[0] + delta, 30));
-                        if (currentEnd[0] < currentStart[0]) {
-                            currentEnd[0] = currentStart[0];
-                        }
+                        currentStart[0] = Math.max(1,
+                                clampSection(baseStart + delta, 30));
+                        currentEnd[0] = baseStart;
+                    } else {
+                        currentStart[0] = baseStart;
+                        currentEnd[0] = baseEnd;
                     }
                     int newHeight = (int) ((currentEnd[0] - currentStart[0] + 1) * rowH - dp(12));
                     int newTop = (int) ((currentStart[0] - 1) * rowH + dp(6));
