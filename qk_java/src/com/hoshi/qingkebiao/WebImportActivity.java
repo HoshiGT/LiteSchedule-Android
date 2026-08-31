@@ -191,6 +191,10 @@ public class WebImportActivity extends Activity {
 
     private void applyDisplayMode(boolean reload) {
         WebSettings s = web.getSettings();
+        View mobileHint = findViewById(R.id.tv_mobile_hint);
+        if (mobileHint != null) {
+            mobileHint.setVisibility(desktopMode ? View.GONE : View.VISIBLE);
+        }
         if (desktopMode) {
             s.setUserAgentString(DESKTOP_UA);
             s.setUseWideViewPort(true);
