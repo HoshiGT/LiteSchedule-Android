@@ -107,6 +107,32 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/layout_widget_hint"
+            android:orientation="vertical"
+            android:background="@drawable/bg_card"
+            android:padding="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp">
+            <TextView
+                android:text="桌面小组件"
+                android:textSize="16sp"
+                android:textColor="#2D3142"
+                android:padding="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:text="长按桌面空白处，添加 LiteSchedule 小组件，可查看今日课表"
+                android:textColor="#6B7280"
+                android:textSize="13sp"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:paddingBottom="4dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/layout_import"
             android:orientation="vertical"
             android:background="@drawable/bg_card"
