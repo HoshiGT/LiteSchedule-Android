@@ -14,67 +14,90 @@
         android:paddingBottom="8dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <TextView
-            android:text="教务导入"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:text="教务导入"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+            <Button
+                android:id="@+id/btn_toggle_controls"
+                android:text="设置网址"
+                android:textColor="#FFFFFF"
+                android:background="@drawable/bg_button_dark"
+                android:layout_width="wrap_content"
+                android:layout_height="38dp"
+                android:minWidth="0dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp" />
+        </LinearLayout>
     </LinearLayout>
 
-    <Spinner
-        android:id="@+id/sp_school_preset"
-        android:layout_marginLeft="12dp"
-        android:layout_marginRight="12dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/bg_search_box"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="44dp" />
-
-    <EditText
-        android:id="@+id/et_school_url"
-        android:hint="输入学校教务系统网址，如 https://jwxt.example.edu.cn"
-        android:textSize="14sp"
-        android:textColor="#2D3142"
-        android:textColorHint="#9AA3B5"
-        android:background="@drawable/bg_search_box"
-        android:padding="12dp"
-        android:inputType="textUri"
-        android:layout_marginLeft="12dp"
-        android:layout_marginRight="12dp"
-        android:layout_marginTop="8dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
     <LinearLayout
-        android:orientation="horizontal"
-        android:paddingLeft="12dp"
-        android:paddingRight="12dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="0dp"
+        android:id="@+id/controls_panel"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <Button
-            android:id="@+id/btn_open_schedule"
-            android:text="打开教务系统"
-            android:textColor="#FFFFFF"
-            android:background="@drawable/bg_button_dark"
-            android:layout_width="0dp"
-            android:layout_height="44dp"
-            android:layout_weight="1"
-            android:layout_marginRight="6dp" />
-        <Button
-            android:id="@+id/btn_import_schedule"
-            android:text="导入当前课表"
-            android:textColor="#FFFFFF"
-            android:background="@drawable/bg_button_primary"
-            android:layout_width="0dp"
-            android:layout_height="44dp"
-            android:layout_weight="1"
-            android:layout_marginLeft="6dp" />
+        <Spinner
+            android:id="@+id/sp_school_preset"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_search_box"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="44dp" />
+
+        <EditText
+            android:id="@+id/et_school_url"
+            android:hint="输入学校教务系统网址，如 https://jwxt.example.edu.cn"
+            android:textSize="14sp"
+            android:textColor="#2D3142"
+            android:textColorHint="#9AA3B5"
+            android:background="@drawable/bg_search_box"
+            android:padding="12dp"
+            android:inputType="textUri"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="0dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <Button
+                android:id="@+id/btn_open_schedule"
+                android:text="打开教务系统"
+                android:textColor="#FFFFFF"
+                android:background="@drawable/bg_button_dark"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_weight="1"
+                android:layout_marginRight="6dp" />
+            <Button
+                android:id="@+id/btn_import_schedule"
+                android:text="导入当前课表"
+                android:textColor="#FFFFFF"
+                android:background="@drawable/bg_button_primary"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_weight="1"
+                android:layout_marginLeft="6dp" />
+        </LinearLayout>
     </LinearLayout>
 
     <WebView

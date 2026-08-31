@@ -99,7 +99,15 @@ public class WebImportActivity extends Activity {
         setContentView(R.layout.activity_web_import);
         db = new CourseDatabase(this);
         web = findViewById(R.id.webview);
+        final View controlsPanel = findViewById(R.id.controls_panel);
         final EditText etUrl = findViewById(R.id.et_school_url);
+        ((Button) findViewById(R.id.btn_toggle_controls)).setOnClickListener(v -> {
+            if (controlsPanel.getVisibility() == View.GONE) {
+                controlsPanel.setVisibility(View.VISIBLE);
+            } else {
+                controlsPanel.setVisibility(View.GONE);
+            }
+        });
         SharedPreferences sp = getSharedPreferences("qingkebiao", MODE_PRIVATE);
         String savedUrl = sp.getString(PREF_SCHOOL_URL, "");
         etUrl.setText(savedUrl);
@@ -134,11 +142,14 @@ public class WebImportActivity extends Activity {
         s.setJavaScriptEnabled(true);
         s.setDomStorageEnabled(true);
         s.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+        // 模拟电脑浏览器，让教务系统返回桌面版页面
         s.setUseWideViewPort(true);
-        s.setLoadWithOverviewMode(true);
+        s.setLoadWithOverviewMode(false);
         s.setSupportZoom(true);
         s.setBuiltInZoomControls(true);
         s.setDisplayZoomControls(false);
+        s.setUserAgentString("Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
+                "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
         web.setWebViewClient(new WebViewClient());
         if (savedUrl != null && !savedUrl.trim().isEmpty()) {
             web.loadUrl(savedUrl.trim());
@@ -162,6 +173,7 @@ public class WebImportActivity extends Activity {
             }
             sp.edit().putString(PREF_SCHOOL_URL, url).apply();
             web.loadUrl(url);
+            controlsPanel.setVisibility(View.GONE);
         });
         ((Button) findViewById(R.id.btn_import_schedule)).setOnClickListener(v -> importCurrentPage());
     }
