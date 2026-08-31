@@ -17,6 +17,7 @@
         <activity android:name=".WebImportActivity" android:exported="false" />
         <activity android:name=".BackgroundActivity" android:exported="false" />
         <activity android:name=".TimeSettingsActivity" android:exported="false" />
+        <activity android:name=".AddCourseActivity" android:exported="false" />
         <receiver android:name=".TodayWidgetProvider" android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

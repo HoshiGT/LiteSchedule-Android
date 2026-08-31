@@ -9,6 +9,7 @@ public class Course {
     public int start;
     public int end;
     public String weeks;
+    public int color = -1;
 
     public Course() {}
     public Course(String name, String teacher, String location, int day, int start, int end, String weeks) {
@@ -19,6 +20,11 @@ public class Course {
         this.start = start;
         this.end = end;
         this.weeks = weeks;
+    }
+
+    public Course(String name, String teacher, String location, int day, int start, int end, String weeks, int color) {
+        this(name, teacher, location, day, start, end, weeks);
+        this.color = color;
     }
 
     public String sectionText() {

@@ -1,12 +1,18 @@
 package com.hoshi.qingkebiao;
 
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.widget.RemoteViews;
+
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class TodayWidgetProvider extends AppWidgetProvider {
     @Override
@@ -25,10 +31,26 @@ public class TodayWidgetProvider extends AppWidgetProvider {
         }
         if (sb.length() == 0) sb.append("今日无课");
 
+        int currentWeek = WeekDateManager.currentWeek(context);
+        String[] dayNames = {"", "周一", "周二", "周三", "周四", "周五", "周六", "周日"};
+        SimpleDateFormat dateFmt = new SimpleDateFormat("yyyy/MM/dd", Locale.CHINA);
+
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_today);
+        views.setTextViewText(R.id.widget_date, dateFmt.format(new Date()));
+        views.setTextViewText(R.id.widget_week_day, "第" + currentWeek + "周 " + dayNames[weekDay]);
+        views.setTextViewText(R.id.widget_courses, sb.toString());
+
+        Intent open = new Intent(context, MainActivity.class);
+        open.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pi = PendingIntent.getActivity(context, 0, open,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        views.setOnClickPendingIntent(R.id.widget_root, pi);
+        views.setOnClickPendingIntent(R.id.widget_arrow, pi);
+
         AppWidgetManager mgr = AppWidgetManager.getInstance(context);
         int[] ids = mgr.getAppWidgetIds(new ComponentName(context, TodayWidgetProvider.class));
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_today);
-        views.setTextViewText(R.id.widget_courses, sb.toString());
-        for (int id : ids) mgr.updateAppWidget(id, views);
+        for (int id : ids) {
+            mgr.updateAppWidget(id, views);
+        }
     }
 }

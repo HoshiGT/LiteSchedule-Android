@@ -10,7 +10,7 @@ import java.util.List;
 
 public class CourseDatabase extends SQLiteOpenHelper {
     public static final String DB_NAME = "qingkebiao.db";
-    public static final int DB_VERSION = 1;
+    public static final int DB_VERSION = 2;
 
     public CourseDatabase(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -26,7 +26,8 @@ public class CourseDatabase extends SQLiteOpenHelper {
                 "day INTEGER," +
                 "start INTEGER," +
                 "end INTEGER," +
-                "weeks TEXT)");
+                "weeks TEXT," +
+                "color INTEGER DEFAULT -1)");
     }
 
     @Override
@@ -44,6 +45,7 @@ public class CourseDatabase extends SQLiteOpenHelper {
         v.put("start", c.start);
         v.put("end", c.end);
         v.put("weeks", c.weeks);
+        v.put("color", c.color);
         return getWritableDatabase().insert("courses", null, v);
     }
 
@@ -84,6 +86,7 @@ public class CourseDatabase extends SQLiteOpenHelper {
             x.start = c.getInt(c.getColumnIndexOrThrow("start"));
             x.end = c.getInt(c.getColumnIndexOrThrow("end"));
             x.weeks = c.getString(c.getColumnIndexOrThrow("weeks"));
+            x.color = c.getInt(c.getColumnIndexOrThrow("color"));
         }
         c.close();
         return x;
@@ -102,6 +105,7 @@ public class CourseDatabase extends SQLiteOpenHelper {
             x.start = c.getInt(c.getColumnIndexOrThrow("start"));
             x.end = c.getInt(c.getColumnIndexOrThrow("end"));
             x.weeks = c.getString(c.getColumnIndexOrThrow("weeks"));
+            x.color = c.getInt(c.getColumnIndexOrThrow("color"));
             list.add(x);
         }
         c.close();

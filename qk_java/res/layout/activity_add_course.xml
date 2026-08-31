@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F4F6FB">
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:background="@drawable/bg_header"
+            android:padding="18dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:text="添加课程"
+                android:textColor="#FFFFFF"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/et_course_name"
+            android:hint="课程名称"
+            android:textSize="16sp"
+            android:textColor="#2D3142"
+            android:textColorHint="#9AA3B5"
+            android:background="@drawable/bg_search_box"
+            android:padding="14dp"
+            android:layout_marginTop="12dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:text="颜色"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#2D3142"
+            android:paddingTop="12dp"
+            android:paddingBottom="6dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:id="@+id/color_row"
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </HorizontalScrollView>
+
+        <EditText
+            android:id="@+id/et_weeks"
+            android:hint="周次，如 1-16"
+            android:textSize="15sp"
+            android:textColor="#2D3142"
+            android:textColorHint="#9AA3B5"
+            android:background="@drawable/bg_search_box"
+            android:padding="14dp"
+            android:layout_marginTop="12dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <EditText
+                android:id="@+id/et_start"
+                android:hint="开始节"
+                android:inputType="number"
+                android:textSize="15sp"
+                android:textColor="#2D3142"
+                android:textColorHint="#9AA3B5"
+                android:background="@drawable/bg_search_box"
+                android:padding="14dp"
+                android:layout_weight="1"
+                android:layout_marginRight="6dp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+            <EditText
+                android:id="@+id/et_end"
+                android:hint="结束节"
+                android:inputType="number"
+                android:textSize="15sp"
+                android:textColor="#2D3142"
+                android:textColorHint="#9AA3B5"
+                android:background="@drawable/bg_search_box"
+                android:padding="14dp"
+                android:layout_weight="1"
+                android:layout_marginLeft="6dp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/et_location"
+            android:hint="教室"
+            android:textSize="15sp"
+            android:textColor="#2D3142"
+            android:textColorHint="#9AA3B5"
+            android:background="@drawable/bg_search_box"
+            android:padding="14dp"
+            android:layout_marginTop="12dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/et_teacher"
+            android:hint="老师"
+            android:textSize="15sp"
+            android:textColor="#2D3142"
+            android:textColorHint="#9AA3B5"
+            android:background="@drawable/bg_search_box"
+            android:padding="14dp"
+            android:layout_marginTop="12dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/et_remark"
+            android:hint="备注"
+            android:textSize="15sp"
+            android:textColor="#2D3142"
+            android:textColorHint="#9AA3B5"
+            android:background="@drawable/bg_search_box"
+            android:padding="14dp"
+            android:layout_marginTop="12dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/btn_save"
+            android:text="保存"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/bg_button_primary"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="16dp" />
+    </LinearLayout>
+</ScrollView>

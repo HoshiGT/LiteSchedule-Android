@@ -183,6 +183,7 @@ public class MainActivity extends Activity {
         // 计算每列宽度
         int availableWidth = getResources().getDisplayMetrics().widthPixels - timeW - dp(16);
         float colW = availableWidth / 7f;
+        final int maxSec = maxSection;
 
         for (Course c : weekCourses) {
             TextView bubble = new TextView(this);
@@ -213,8 +214,93 @@ public class MainActivity extends Activity {
             dataArea.addView(bubble, lp);
         }
 
+        // 点击空白处快速添加：显示临时气泡，上下拖动调整节数，松手进入新增课程页
+        dataArea.setOnTouchListener(new View.OnTouchListener() {
+            float downX, downY;
+            boolean bubbleShown;
+            TextView bubble;
+            int day, startSec, endSec;
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getActionMasked()) {
+                    case MotionEvent.ACTION_DOWN:
+                        downX = event.getX();
+                        downY = event.getY();
+                        day = clampDay((int) (downX / colW) + 1);
+                        startSec = clampSection((int) (downY / rowH) + 1, maxSec);
+                        endSec = startSec;
+                        bubble = showBubble(dataArea, downX, downY, day, startSec, endSec, rowH, colW);
+                        bubbleShown = true;
+                        return false;
+                    case MotionEvent.ACTION_MOVE:
+                        if (bubbleShown) {
+                            int deltaSec = (int) ((event.getY() - downY) / rowH);
+                            endSec = clampSection(startSec + deltaSec, maxSec);
+                            updateBubble(bubble, startSec, endSec, rowH);
+                        }
+                        return false;
+                    case MotionEvent.ACTION_UP:
+                        if (bubbleShown) {
+                            bubbleShown = false;
+                            if (bubble != null) dataArea.removeView(bubble);
+                            Intent intent = new Intent(MainActivity.this, AddCourseActivity.class);
+                            intent.putExtra("day", day);
+                            intent.putExtra("start", startSec);
+                            intent.putExtra("end", endSec);
+                            startActivity(intent);
+                        }
+                        return false;
+                    case MotionEvent.ACTION_CANCEL:
+                        if (bubbleShown && bubble != null) dataArea.removeView(bubble);
+                        bubbleShown = false;
+                        return false;
+                }
+                return false;
+            }
+        });
+
         content.addView(body);
         return content;
+    }
+
+    private int clampDay(int day) {
+        if (day < 1) return 1;
+        if (day > 7) return 7;
+        return day;
+    }
+
+    private int clampSection(int sec, int max) {
+        if (sec < 1) return 1;
+        if (sec > max) return max;
+        return sec;
+    }
+
+    private TextView showBubble(FrameLayout area, float x, float y, int day, int start, int end,
+                            int rowH, float colW) {
+        TextView b = new TextView(this);
+        b.setText("+");
+        b.setTextSize(22);
+        b.setTextColor(0xFFFFFFFF);
+        b.setGravity(Gravity.CENTER);
+        b.setBackground(roundedBg(0x884C5C92, 8));
+        int left = (int) ((day - 1) * colW + dp(4));
+        int top = (int) ((start - 1) * rowH + dp(4));
+        int width = (int) (colW - dp(8));
+        int height = (int) ((end - start + 1) * rowH - dp(8));
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(width, height);
+        lp.leftMargin = left;
+        lp.topMargin = top;
+        area.addView(b, lp);
+        return b;
+    }
+
+    private void updateBubble(TextView bubble, int start, int end, int rowH) {
+        if (bubble == null) return;
+        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) bubble.getLayoutParams();
+        lp.topMargin = (int) ((start - 1) * rowH + dp(4));
+        lp.height = (int) ((end - start + 1) * rowH - dp(8));
+        bubble.setLayoutParams(lp);
     }
 
     private TableLayout createWeekTable(List<Course> weekCourses) {
@@ -337,6 +423,9 @@ public class MainActivity extends Activity {
     }
 
     private int colorFor(Course c) {
+        if (c.color >= 0 && c.color < COURSE_COLORS.length) {
+            return COURSE_COLORS[c.color];
+        }
         return COURSE_COLORS[Math.abs(c.name.hashCode()) % COURSE_COLORS.length];
     }
 
