@@ -2,6 +2,11 @@
 
 ## 一、当前状态
 
+### GitHub
+- 仓库：`https://github.com/HoshiGT/LiteSchedule-Android`
+- 分支：`main`
+- 已推送本地提交
+
 ### 手机/环境
 - 设备：OnePlus 8T (KB2000)，已 root，无线 ADB `192.168.8.107:40877`
 - 已安装：
@@ -40,11 +45,12 @@
     - 课表改为参考 WakeUp 的 FrameLayout 覆盖式布局：左侧“上课时间”列 + 7 列星期并显示日期 + 课程气泡按节次跨行，外面只显示课程名/教室，老师在详情
     - 新增“调整上课时间”设置页，可自定义每节课开始时间
     - 新增“设置开学日期”，主页显示“实际本周：第N周”；周次翻页和日期都基于开学第一周周一计算
+    - 新增使用 10/50/100 天的首次启动赞赏提醒弹窗
     - 设置入口改为顶部齿轮；新增“赞赏 1 元解锁自定义背景”（微信赞赏二维码 + 设备码兑换激活码 + 预设背景切换 + 相册导入图片）
     - 设置页新增“开源 / 赞赏”入口，跳转到 `open_source_url`（当前 `https://schedule.hoshichan.moe`）
     - 教务导入页新增“导入当前课表”按钮，可尝试从 WebView 当前页面解析课表表格写入本地数据库
     - WebView 已加 `DownloadListener`：点击教务“导出课表”时自动下载文件，若是 XML 会自动解析导入本地数据库
-    - 教务导入页改为先打开 WebVPN 登录页，另加“打开教务课表”按钮进入内部课表页，避免直接加载 API 返回 JSON 未登录提示
+    - 教务导入页已改为自定义学校教务网址：用户输入自己学校的教务系统地址后打开/导入，不再绑定 WebVPN
     - 文件导入已支持 XML / XLS：教务系统导出的课表 XML 可用 `CourseXmlParser` 识别，课表 .xls 可用 `CourseXlsParser` + `libs/jxl.jar` 解析；CSV 仍保留
     - 基于 Java + Android 原生，不用 Gradle，可以纯命令行构建（已内置 AndroidX ViewPager2/JXL jar）
 
