@@ -1,5 +1,6 @@
 package com.hoshi.qingkebiao;
 
+import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
@@ -18,6 +19,7 @@ import java.util.Locale;
 public class TodayWidgetProvider extends AppWidgetProvider {
     private static final String ACTION_NEXT_DAY = "com.hoshi.qingkebiao.WIDGET_NEXT_DAY";
     private static final String ACTION_PREV_DAY = "com.hoshi.qingkebiao.WIDGET_PREV_DAY";
+    private static final String ACTION_DAY_TICK = "com.hoshi.qingkebiao.WIDGET_DAY_TICK";
     private static final String PREFS = "qingkebiao";
     private static final String KEY_OFFSET = "widget_day_offset";
 
@@ -36,7 +38,8 @@ public class TodayWidgetProvider extends AppWidgetProvider {
             return;
         } else if (Intent.ACTION_DATE_CHANGED.equals(action)
                 || Intent.ACTION_TIME_CHANGED.equals(action)
-                || Intent.ACTION_TIMEZONE_CHANGED.equals(action)) {
+                || Intent.ACTION_TIMEZONE_CHANGED.equals(action)
+                || ACTION_DAY_TICK.equals(action)) {
             updateAll(context);
             return;
         }
@@ -104,6 +107,24 @@ public class TodayWidgetProvider extends AppWidgetProvider {
         }
         if (ids.length > 0) {
             mgr.notifyAppWidgetViewDataChanged(ids, R.id.widget_list);
+        }
+        scheduleNextDayRefresh(context);
+    }
+
+    private static void scheduleNextDayRefresh(Context context) {
+        Calendar next = Calendar.getInstance();
+        next.add(Calendar.DAY_OF_YEAR, 1);
+        next.set(Calendar.HOUR_OF_DAY, 0);
+        next.set(Calendar.MINUTE, 0);
+        next.set(Calendar.SECOND, 0);
+        next.set(Calendar.MILLISECOND, 0);
+
+        Intent intent = new Intent(context, TodayWidgetProvider.class).setAction(ACTION_DAY_TICK);
+        PendingIntent pi = PendingIntent.getBroadcast(context, 2, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        if (am != null) {
+            am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, next.getTimeInMillis(), pi);
         }
     }
 }
