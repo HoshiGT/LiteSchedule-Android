@@ -202,3 +202,5 @@ cd build && zip -q base.apk classes.dex && cd ..
 - 如果继续用 Gradle，需要把 `GRADLE_USER_HOME` 指到 `/home/hoshi/Kebiao/.gradle`，但当前没有 Gradle 发行包缓存，离线构建会卡在下载。
 - 魔改版不要改包名，否则 WebView 会坏。
 - 官方版和魔改版不能共存。
+
+- 国内镜像下载：https://schedule.hoshichan.moe/LiteSchedule-v1.0.1.apk

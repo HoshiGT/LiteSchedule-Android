@@ -41,3 +41,5 @@ cd /home/hoshi/Kebiao/qk_java
 - 桌面小组件目前是列表式今日课程；更复杂的“桌面直接拖拽添加课程”需要悬浮窗方案
 - 赞赏/在线解锁服务在 `<服务器IP>`，API 走 schedule.hoshichan.moe
 - 新的问题建议新开窗口，携带本文件继续
+
+- 国内镜像下载：https://schedule.hoshichan.moe/LiteSchedule-v1.0.1.apk
