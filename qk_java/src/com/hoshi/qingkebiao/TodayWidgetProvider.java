@@ -56,5 +56,8 @@ public class TodayWidgetProvider extends AppWidgetProvider {
         for (int id : ids) {
             mgr.updateAppWidget(id, views);
         }
+        if (ids.length > 0) {
+            mgr.notifyAppWidgetViewDataChanged(ids, R.id.widget_list);
+        }
     }
 }

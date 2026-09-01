@@ -70,6 +70,8 @@ public class MainActivity extends Activity {
         ((Button) findViewById(R.id.btn_go_import)).setOnClickListener(v -> startActivity(new Intent(this, SettingsActivity.class)));
         ((Button) findViewById(R.id.btn_prev_week)).setOnClickListener(v -> changeWeek(-1));
         ((Button) findViewById(R.id.btn_next_week)).setOnClickListener(v -> changeWeek(1));
+        // 回到真实当前周：每次冷启动/重启 App 都回到本周，不保留上次手动翻到的周
+        CurrentWeekManager.set(this, WeekDateManager.currentWeek(this));
         setupWeekPager();
         reload();
         checkDonationMilestone();
