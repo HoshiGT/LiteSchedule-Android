@@ -46,8 +46,14 @@ public class TodayWidgetRemoteViewsService extends RemoteViewsService {
         public void onDataSetChanged() {
             courses.clear();
             CourseDatabase db = new CourseDatabase(context);
-            int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
-            int weekDay = (day == 1) ? 7 : day - 1;
+            int offset = context.getSharedPreferences("qingkebiao", Context.MODE_PRIVATE)
+                    .getInt("widget_day_offset", 0);
+            if (offset > 1) offset = 1;
+            if (offset < 0) offset = 0;
+            Calendar selected = Calendar.getInstance();
+            selected.add(Calendar.DAY_OF_YEAR, offset);
+            int day = selected.get(Calendar.DAY_OF_WEEK);
+            int weekDay = (day == Calendar.SUNDAY) ? 7 : day - 1;
             courses.addAll(db.getByDay(weekDay));
         }
 
