@@ -34,6 +34,11 @@ public class TodayWidgetProvider extends AppWidgetProvider {
                     .edit().putInt(KEY_OFFSET, 0).apply();
             updateAll(context);
             return;
+        } else if (Intent.ACTION_DATE_CHANGED.equals(action)
+                || Intent.ACTION_TIME_CHANGED.equals(action)
+                || Intent.ACTION_TIMEZONE_CHANGED.equals(action)) {
+            updateAll(context);
+            return;
         }
         super.onReceive(context, intent);
     }
