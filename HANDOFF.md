@@ -6,7 +6,7 @@
 - 仓库：`https://github.com/HoshiGT/LiteSchedule-Android`
 - 分支：`main`
 - 已推送本地提交
-- Release：`v1.0.0`（https://github.com/HoshiGT/LiteSchedule-Android/releases/tag/v1.0.0）
+- Release：`v1.0.1`（v1.0.0 仍保留）（https://github.com/HoshiGT/LiteSchedule-Android/releases/tag/v1.0.0）
 
 ### 手机/环境
 - 设备：OnePlus 8T (KB2000)，已 root，无线 ADB `192.168.8.107:40877`

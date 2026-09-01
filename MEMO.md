@@ -3,7 +3,7 @@
 ## 当前状态
 
 - App 名：`LiteSchedule`
-- 版本：`1.0.0`
+- 版本：`1.0.1`
 - GitHub：https://github.com/HoshiGT/LiteSchedule-Android
 - 已发布 Release：`v1.0.0`
 
