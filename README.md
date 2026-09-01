@@ -2,8 +2,6 @@
 
 一个轻量、开源的 Android 课程表应用。
 
-GitHub: <https://github.com/HoshiGT/LiteSchedule-Android>
-
 ## 功能
 
 - 周课表网格视图（参考 WakeUp 风格）
