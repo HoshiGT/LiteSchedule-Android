@@ -87,6 +87,38 @@ public class OnlineUnlockManager {
         return false;
     }
 
+    /**
+     * 赞赏登记：用户在 App 里点「我已赞赏」后，把设备码登记到服务端待确认队列。
+     * 作者核对赞赏记录后一键确认，App 轮询解锁状态后自动生效。
+     * POST /api/qingkebiao/pending  body: {"device":"DEVICE_CODE"}
+     */
+    public static boolean registerPending(Context context) {
+        String base = baseUrl(context);
+        if (base == null || base.trim().isEmpty()) {
+            return false;
+        }
+        try {
+            JSONObject body = new JSONObject();
+            body.put("device", UnlockManager.deviceCode(context));
+            byte[] data = body.toString().getBytes(StandardCharsets.UTF_8);
+
+            HttpURLConnection conn = (HttpURLConnection) new URL(base + "/api/qingkebiao/pending").openConnection();
+            conn.setRequestMethod("POST");
+            conn.setDoOutput(true);
+            conn.setConnectTimeout(TIMEOUT_MS);
+            conn.setReadTimeout(TIMEOUT_MS);
+            conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+            conn.setRequestProperty("Content-Length", String.valueOf(data.length));
+
+            try (OutputStream out = conn.getOutputStream()) {
+                out.write(data);
+            }
+            return conn.getResponseCode() == 200;
+        } catch (Exception ignored) {
+        }
+        return false;
+    }
+
     private static String baseUrl(Context context) {
         return context.getString(R.string.server_unlock_url);
     }

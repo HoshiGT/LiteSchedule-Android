@@ -53,7 +53,7 @@
             android:layout_height="wrap_content" />
 
         <TextView
-            android:text="服务端已标记解锁时会自动生效；否则可把下方设备码发给作者，输入激活码或凭证完成解锁。"
+            android:text="赞赏后点「我已赞赏」登记设备码，作者核对赞赏记录后 App 自动解锁。服务器不可达时，也可输入激活码/凭证完成解锁。"
             android:textColor="#6B7280"
             android:textSize="13sp"
             android:paddingBottom="8dp"
@@ -93,6 +93,23 @@
                 android:paddingLeft="12dp"
                 android:paddingRight="12dp" />
         </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_register"
+            android:text="我已赞赏，提交登记"
+            android:textColor="#4C5C92"
+            android:background="@drawable/bg_button_secondary"
+            android:layout_marginTop="12dp"
+            android:layout_width="match_parent"
+            android:layout_height="48dp" />
+
+        <TextView
+            android:text="输入激活码 / 订单号 / 凭证（备用）"
+            android:textColor="#6B7280"
+            android:textSize="13sp"
+            android:paddingTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
         <EditText
             android:id="@+id/et_activation"

@@ -32,6 +32,7 @@ public class BackgroundActivity extends Activity {
     private Button btnUnlock;
     private Button btnCopyDevice;
     private Button btnChooseImage;
+    private Button btnRegister;
     private EditText etActivation;
     private LinearLayout lockPanel;
     private LinearLayout unlockedPanel;
@@ -54,6 +55,7 @@ public class BackgroundActivity extends Activity {
         btnCopyDevice = findViewById(R.id.btn_copy_device);
         btnChooseImage = findViewById(R.id.btn_choose_image);
         etActivation = findViewById(R.id.et_activation);
+        btnRegister = findViewById(R.id.btn_register);
         lockPanel = findViewById(R.id.lock_panel);
         unlockedPanel = findViewById(R.id.unlocked_panel);
         bgOptions = findViewById(R.id.bg_options);
@@ -65,6 +67,22 @@ public class BackgroundActivity extends Activity {
             ClipboardManager cm = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
             cm.setPrimaryClip(ClipData.newPlainText("设备码", tvDeviceCode.getText().toString()));
             Toast.makeText(this, "设备码已复制", Toast.LENGTH_SHORT).show();
+        });
+
+        btnRegister.setOnClickListener(v -> {
+            btnRegister.setEnabled(false);
+            new Thread(() -> {
+                final boolean ok = OnlineUnlockManager.registerPending(this);
+                runOnUiThread(() -> {
+                    btnRegister.setEnabled(true);
+                    if (ok) {
+                        Toast.makeText(this, "已登记！作者核对赞赏记录后，本机会自动解锁", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(this, "登记失败，请稍后重试，或把设备码发给作者", Toast.LENGTH_LONG).show();
+                    }
+                    startPolling();
+                });
+            }).start();
         });
 
         btnUnlock.setOnClickListener(v -> {
@@ -92,12 +110,41 @@ public class BackgroundActivity extends Activity {
         buildOptions();
         updateUi();
         checkOnlineUnlockAsync();
+        startPolling();
+    }
+
+    private final android.os.Handler pollHandler =
+            new android.os.Handler(android.os.Looper.getMainLooper());
+    private final Runnable pollRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (isFinishing() || BackgroundManager.isUnlocked(BackgroundActivity.this)
+                    || lockPanel.getVisibility() != View.VISIBLE) {
+                return;
+            }
+            checkOnlineUnlockAsync();
+            pollHandler.postDelayed(this, 30000);
+        }
+    };
+
+    private void startPolling() {
+        pollHandler.removeCallbacks(pollRunnable);
+        if (!BackgroundManager.isUnlocked(this) && lockPanel.getVisibility() == View.VISIBLE) {
+            pollHandler.postDelayed(pollRunnable, 30000);
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         checkOnlineUnlockAsync();
+        startPolling();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        pollHandler.removeCallbacks(pollRunnable);
     }
 
     private void checkOnlineUnlockAsync() {
@@ -201,7 +248,7 @@ public class BackgroundActivity extends Activity {
             root.setBackgroundResource(BackgroundManager.backgroundRes(this));
             showImagePreviewIfNeeded();
         } else {
-            tvLockStatus.setText("赞赏 1 元后，把下方设备码发给作者，兑换激活码解锁");
+            tvLockStatus.setText("赞赏 1 元后点「我已赞赏」登记设备码，作者核对赞赏记录后本机自动解锁");
             lockPanel.setVisibility(View.VISIBLE);
             unlockedPanel.setVisibility(View.GONE);
             imgCustomPreview.setVisibility(View.GONE);
