@@ -302,9 +302,9 @@ const server = http.createServer((req, res) => {
 
                 let unlocked = unlocks[device] === true;
                 if (!unlocked && proof && proof === activationCode(device)) {
+                    // 走统一入口：顺便把该设备从待确认队列里清掉
+                    markUnlocked(device);
                     unlocked = true;
-                    unlocks[device] = true;
-                    saveUnlocks(unlocks);
                 }
                 sendJson(res, { unlocked });
             } catch (e) {
@@ -326,20 +326,12 @@ const server = http.createServer((req, res) => {
                     return sendJson(res, { ok: false, error: 'invalid_device' }, 400);
                 }
                 const pending = loadPending();
-                if (pending[device] && pending[device].t) {
-                    // 重复登记：刷新登记时间
-                    pending[device].t = new Date().toISOString();
-                } else {
-                    pending[device] = { t: new Date().toISOString() };
+                // 队列上限：满了直接拒绝新登记，不再淘汰最旧的
+                // （否则有人刷假设备码就能把真实待确认用户挤掉）
+                if (!pending[device] && Object.keys(pending).length >= 1000) {
+                    return sendJson(res, { ok: false, error: 'queue_full' }, 429);
                 }
-                // 队列上限，防止无限增长（丢弃最早登记的）
-                const entries = Object.entries(pending);
-                if (entries.length > 1000) {
-                    entries.sort((a, b) => (a[1].t || '') < (b[1].t || '') ? -1 : 1);
-                    for (const [code] of entries.slice(0, entries.length - 1000)) {
-                        delete pending[code];
-                    }
-                }
+                pending[device] = { t: new Date().toISOString() };
                 savePending(pending);
                 // 如果其实已经解锁过，直接返回解锁状态
                 const unlocks = loadUnlocks();
@@ -361,6 +353,33 @@ const server = http.createServer((req, res) => {
             .map(code => ({ device: code, ...devices[code] }))
             .sort((a, b) => (a.t || '') > (b.t || '') ? -1 : 1);
         return sendJson(res, { count: list.length, devices: list });
+    }
+
+    // 管理员从待确认队列里删掉某条（刷进来的垃圾登记）
+    if (pathname === '/api/qingkebiao/pending/remove' && req.method === 'POST') {
+        const config = loadConfig();
+        const token = url.searchParams.get('token') || '';
+        const device = (url.searchParams.get('device') || '').toUpperCase();
+        if (!config.adminToken || token !== config.adminToken) {
+            return sendJson(res, { ok: false, error: 'forbidden' }, 403);
+        }
+        const pending = loadPending();
+        if (device) {
+            delete pending[device];
+        }
+        savePending(pending);
+        return sendJson(res, { ok: true, removed: device || null });
+    }
+
+    // 管理员清空整个待确认队列
+    if (pathname === '/api/qingkebiao/pending/clear' && req.method === 'POST') {
+        const config = loadConfig();
+        const token = url.searchParams.get('token') || '';
+        if (!config.adminToken || token !== config.adminToken) {
+            return sendJson(res, { ok: false, error: 'forbidden' }, 403);
+        }
+        savePending({});
+        return sendJson(res, { ok: true, cleared: true });
     }
 
     // 管理员确认某个设备码已赞赏 -> 标记解锁（也可用于手动标记任意设备）
@@ -389,7 +408,8 @@ const server = http.createServer((req, res) => {
             const time = item.t ? new Date(item.t).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' }) : '未知';
             rows += `<tr><td><b>${item.device}</b></td><td>${time}</td>
 <td><button onclick="confirmDevice('${item.device}')">确认赞赏</button>
-<button onclick="copyCode('${item.device}')" style="margin-left:8px">复制码</button></td></tr>`;
+<button onclick="copyCode('${item.device}')" style="margin-left:8px">复制码</button>
+<button onclick="removeDevice('${item.device}')" style="margin-left:8px">删除</button></td></tr>`;
         }
         if (!rows) rows = '<tr><td colspan="3">暂无待确认设备</td></tr>';
 
@@ -402,6 +422,7 @@ const server = http.createServer((req, res) => {
 <tr><th>设备码</th><th>登记时间</th><th>操作</th></tr>
 ${rows}
 </table>
+<p><button onclick="clearQueue()">清空待确认队列</button>（只清登记，不影响已解锁设备）</p>
 <h3>手动标记</h3>
 <p>不在队列里的设备码也可以直接标记（比如用户通过其它渠道联系你）：</p>
 <form onsubmit="manualMark(); return false;">
@@ -415,6 +436,18 @@ async function confirmDevice(code) {
     const r = await fetch('/api/qingkebiao/confirm?token=${encodeURIComponent(url.searchParams.get('token') || '')}&device=' + code, { method: 'POST' });
     const j = await r.json();
     if (j.ok) { location.reload(); } else { alert('确认失败：' + (j.error || '未知错误')); }
+}
+async function removeDevice(code) {
+    if (!confirm('从待确认队列删除 ' + code + '？（不影响已解锁状态）')) return;
+    const r = await fetch('/api/qingkebiao/pending/remove?token=${encodeURIComponent(url.searchParams.get('token') || '')}&device=' + code, { method: 'POST' });
+    const j = await r.json();
+    if (j.ok) { location.reload(); } else { alert('删除失败：' + (j.error || '未知错误')); }
+}
+async function clearQueue() {
+    if (!confirm('清空整个待确认队列？')) return;
+    const r = await fetch('/api/qingkebiao/pending/clear?token=${encodeURIComponent(url.searchParams.get('token') || '')}', { method: 'POST' });
+    const j = await r.json();
+    if (j.ok) { location.reload(); } else { alert('清空失败：' + (j.error || '未知错误')); }
 }
 function copyCode(code) {
     navigator.clipboard && navigator.clipboard.writeText(code);

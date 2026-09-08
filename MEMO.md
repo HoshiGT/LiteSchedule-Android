@@ -7,6 +7,9 @@
 - GitHub：https://github.com/HoshiGT/LiteSchedule-Android
 - 赞赏/在线解锁：https://schedule.hoshichan.moe
 - 测试机无线 ADB：`192.168.8.107:38559`（端口已从 40877 改为 38559）
+  - ⚠️ 验收时误执行 `svc wifi disable`，手机 WiFi 被关、ADB 断开，需手动重开 WiFi 后再 `adb connect`
+  - 赞赏页解锁状态存在 `shared_prefs/qingkebiao.xml` 的 `background_unlocked`；
+    但每次打开赞赏页都会联网复查，服务端说 true 会把它改回 true
 
 ## 核心功能
 
@@ -51,25 +54,74 @@ cd /home/hoshi/Kebiao/qk_java
 
 ## 明天待办（重要）
 
-1. **修 VPS SSH**：`cancon.hpccube.com:65023`（kunshan 配置）publickey 认证被拒，
-   两把 key（kunshan_acx0ui86yf / kunshan_alt）都不认了，需要重新加公钥或换 key
+1. **服务器 SSH 已确认可用**（2026-09-08 验收时实测）：
+   - 真实服务器是 `155.103.157.120`（工作区 HANDOFF.md 第 189 行，未提交、勿写进公开仓库）
+   - `ssh root@155.103.157.120`（默认密钥 `~/.ssh/id_ed25519`）可登录
+   - ⚠️ `cancon.hpccube.com:65023`（ssh config 里的 `kunshan`）是**昆山超算集群，不是本项目服务器**，之前记的"VPS SSH 挂了"是判错主机
+   - ⚠️ 连续多次失败登录会触发服务器 fail2ban，本机 IP 被临时拒连（22 端口 Connection refused），等 10 分钟或让服务器侧解封
 2. **部署服务端**：
    ```bash
-   scp /home/hoshi/Kebiao/server/server.js <user>@cancon.hpccube.com:/opt/qk-server/server.js
-   ssh kunshan 'systemctl restart qk-unlock'
+   scp server/server.js root@155.103.157.120:/opt/qk-server/server.js
+   ssh root@155.103.157.120 'systemctl restart qk-unlock && systemctl is-active qk-unlock'
    ```
-   部署前新接口是 404（App 点「我已赞赏」会提示登记失败）
+   部署前新接口是 404（App 点「我已赞赏」会提示登记失败，已验证不会崩）
 3. **部署新 APK**：
    ```bash
    cp /home/hoshi/Kebiao/qingkebiao_v1.0.3.apk /var/www/schedule.hoshichan.moe/html/LiteSchedule-v1.0.3.apk
    ```
    （nginx 已有 `~ ^/(LiteSchedule-.*\.apk)$` 规则自动 302 到统计入口，无需改配置）
-4. **真机全链路测试**：
-   - `adb -s 192.168.8.107:38559 shell pm clear com.hoshi.qingkebiao` 重置解锁状态
-   - 赞赏页点「我已赞赏」→ 管理页确认 → 观察 App 30 秒内自动解锁
-5. （可选，彻底免人工）接聚合支付平台（虎皮椒/易支付，个人收款码即可，费率约 1-2%）：
+4. **生产端到端复验**（本地已跑通，这步只是换成生产地址再确认一遍）：
+   - 手机设备码**必须从 App 界面读**（赞赏页显示的那个，本次是 `C9B56FE0`），
+     ⚠️ 不要用 `adb shell settings get secure android_id` 去算，Android 8+ 两者不同
+   - 该设备码当前在生产 `unlocks.json` 里是 `true`，要验"未解锁→登记→确认"得先把它删掉
+   - 流程：赞赏页点「我已赞赏」→ 查 `/api/qingkebiao/pending?token=` 是否收到 → 管理页点「确认赞赏」
+     → 观察 App 在 30 秒内自动解锁（prefs 里 `background_unlocked` 变 true、UI 切到已解锁面板）
+   - 现场恢复：把设备码重新标记解锁（或走确认流程），装回生产 APK
+5. **（建议）把今天这套复测固化成 `server/verify.sh`**：一条命令跑完
+   顺路径 + 异常路径 + 鉴权 + 队列清理 + 老功能回归，退出码说话，验收不再靠模型自述
+6. （可选，彻底免人工）接聚合支付平台（虎皮椒/易支付，个人收款码即可，费率约 1-2%）：
    用户点按钮跳转支付页，平台带签名回调 `POST /api/qingkebiao/pay/notify`，服务端验签后自动解锁。
    server.js 里已留该端点（当前按 HMAC 约定实现，接平台时改成对应验签）
+
+## 端到端验收结果（2026-09-08，真机 + 本地服务端）
+
+用「临时指向本机服务器的测试包」在 OnePlus 8T 上跑通了完整链路（不依赖生产部署）：
+
+1. 测试包（`http://192.168.8.247:8799`）安装后处于锁定态，界面正确显示：
+   设备码 `C9B56FE0`、「我已赞赏，提交登记」按钮、备用激活码输入框
+2. 点按钮 → 本机服务端 `pending.json` 立刻收到 `C9B56FE0`（App→服务端登记链路 ✓）
+3. 管理接口确认 → `{"ok":true,"unlocked":true}`，队列自动清空 ✓
+4. **App 在 35 秒内自动解锁**（30s 轮询生效），UI 切换到「已解锁，可切换预设背景或导入本地图片」，
+   全程用户没有再输任何激活码 ✓
+5. 断网状态点按钮 → 无崩溃、按钮自动恢复可点 ✓
+6. 现场已还原：装回生产版 APK（资源里确认是 `https://schedule.hoshichan.moe`）、
+   iptables 规则已删、App 数据（解锁状态/教务网址）保留
+
+关键经验：**Android 8+ 的 ANDROID_ID 按「签名+用户」隔离**，
+用 `adb shell settings get secure android_id` 算出来的设备码和 App 内的**不是同一个**，
+验证时要直接从 App 界面读设备码。
+
+## 验收发现（2026-09-08 复测，待修）
+
+1. ~~`POST /unlock` 用离线激活码自解锁时不清 pending 队列~~ ✅ 已修（改走 `markUnlocked`），复测通过
+2. ~~`POST /pending` 队列满了淘汰最旧（可被刷假设备码挤掉真实用户）~~ ✅ 已修
+   （满了返回 429 `queue_full`，已登记设备仍可刷新时间），并新增管理页「删除」「清空队列」
+3. **管理页 token 走 URL query**：会进 nginx access log / 浏览器历史；
+   若要更稳，改成 POST + Authorization 头
+4. **离线激活码 secret 在公开仓库里**（`UnlockManager.java` + `server.js` 都是公开文件），
+   任何人可自算激活码绕过赞赏；新登记-确认流程不依赖该 secret，后续可考虑只留联网验证
+5. 轮询只在赞赏页前台且未解锁时进行；用户登记后若离开该页，要等下次打开才会解锁（可接受，但要知道）
+6. `POST /pending` 仍无频率限制（只挡了队列满）；要更稳可按 IP 限流
+
+## 本地模型（Qwen3 Q3_K_M + Q4 KV / 128K）的已知退化点
+
+本次验收看到的失败模式都指向"长程召回差 + 过早下结论"，与量化策略吻合：
+
+- Q3_K_M 对**自省/自我质疑**能力影响最大 → 它不会主动问"还有哪条路径没测"
+- KV 的 **K 比 V 敏感**，K/V 都压 Q4 时，长上下文里"定位到某个具体 token"的能力下降最快
+  → 远端细节（HANDOFF 里的 IP、之前测过的路径）容易丢
+- 建议：`-ctk q8_0 -ctv q4_0`（或 K 用 f16）；上下文 32–48K + 文件记忆 + grep 取数，
+  通常好过 128K 全塞；事实性断言要求带 `文件:行号`，禁止无证据的"全过/挂了"
 
 ## 已知问题 / 后续
 
