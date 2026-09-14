@@ -101,6 +101,29 @@ cd /home/hoshi/Kebiao/qk_java
 用 `adb shell settings get secure android_id` 算出来的设备码和 App 内的**不是同一个**，
 验证时要直接从 App 界面读设备码。
 
+## 小组件「有课却显示没课」bug（2026-09-14 已修，v1.0.4）
+
+**现象**：跨到新的一周后，今日课程小组件一直显示「今日无课 / 明日无课」；
+日期、周次、星期都正确，点箭头切明天再切回来也还是空。
+
+**根因**：小组件的两部分数据走的是**两条独立的更新链路**——
+- 日期/周次/箭头：`updateAll()` 里直接 `setTextViewText`，静态 RemoteViews，随 `updateAppWidget` 立即生效；
+- 课程列表：`ListView` + `RemoteViewsService`，要等 Launcher 去**绑定服务**取数。
+
+App 被系统冻结/回收时（ColorOS 的 `OplusHansManager` 日志能看到 `F enter()`、`unproxyAlarmsByUid`），
+服务绑不上，集合视图就一直是空的，而头部照样是新的 → 「日期周次都对，就是没课」。
+
+**修法**（改 `TodayWidgetProvider.java` + `widget_today.xml`，删掉 `TodayWidgetRemoteViewsService`）：
+1. 课程列表改成**静态 RemoteViews 直出**：布局预置 6 行，更新时按需 `setViewVisibility` + 填文本，
+   与头部在**同一次 updateAppWidget** 里下发 → 不可能再不一致，也不依赖绑定服务
+   （实测：`am kill` 杀掉 App 进程后小组件照常显示课程）
+2. 显示几行**按小组件实际高度自适应**（`capacityFor()` 读 `OPTION_APPWIDGET_MIN_HEIGHT`），
+   装不下就少显示几门 + 最后一行「还有 N 门课…」，不会再被裁
+3. 行高保持旧版观感（10dp 内边距、12sp/11sp、每行 109px）
+4. 顺带修掉潜在崩溃：`Math.abs(name.hashCode())` 在 hashCode 为 `Integer.MIN_VALUE` 时仍为负 → 数组负下标越界
+5. 跨天（DATE_CHANGED / 每日闹钟）时把「预览明天」的 offset 复位，避免新的一天还停在昨天选的偏移上
+6. 午夜刷新改用 `setExactAndAllowWhileIdle`（有精确闹钟权限时），doze 下更准点
+
 ## 验收发现（2026-09-08 复测，待修）
 
 1. ~~`POST /unlock` 用离线激活码自解锁时不清 pending 队列~~ ✅ 已修（改走 `markUnlocked`），复测通过
