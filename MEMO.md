@@ -124,6 +124,22 @@ App 被系统冻结/回收时（ColorOS 的 `OplusHansManager` 日志能看到 `
 5. 跨天（DATE_CHANGED / 每日闹钟）时把「预览明天」的 offset 复位，避免新的一天还停在昨天选的偏移上
 6. 午夜刷新改用 `setExactAndAllowWhileIdle`（有精确闹钟权限时），doze 下更准点
 
+**真机时间穿越复现测试（8T / v1.0.4）**：
+先 `settings put global auto_time 0`，用 `su -c date -s "YYYY-MM-DD 12:00:00"` 改时间，测完恢复 `auto_time 1`；
+按「周六 → 周日 → 周一」顺序，每次点小组件箭头手动刷新：
+
+| 时间 | 小组件显示 |
+|---|---|
+| 周六 09-19 | `2026/09/20 第3周 周日 · 明日无课` ✓（周末确实无课） |
+| 周日 09-20 | `2026/09/20 第3周 周日 · 今日无课` ✓ |
+| **周一 09-21（跨进第4周）** | **`第4周 周一 · 计算机图形学 / 印刷化学与材料 / 跨媒体信息技术`** ✓ **原 bug 未复现** |
+
+已知小限制：把系统时间**往回调**时小组件不会自动刷新（往回调不会触发已排定的闹钟，
+ColorOS 还会吞掉系统广播），点一下箭头或等下一次更新即可；正常使用遇不到。
+
+验证技巧：shell(uid 2000) 不能发 `DATE_CHANGED` 这种受保护广播，
+要模拟"午夜刷新"用自定义 action：`am broadcast -a com.hoshi.qingkebiao.WIDGET_DAY_TICK -n com.hoshi.qingkebiao/.TodayWidgetProvider`
+
 ## 验收发现（2026-09-08 复测，待修）
 
 1. ~~`POST /unlock` 用离线激活码自解锁时不清 pending 队列~~ ✅ 已修（改走 `markUnlocked`），复测通过
