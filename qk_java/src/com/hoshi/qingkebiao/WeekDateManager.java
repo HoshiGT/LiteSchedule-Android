@@ -30,13 +30,16 @@ public class WeekDateManager {
                 .edit().putLong(KEY_START, millis).apply();
     }
 
-    public static int currentWeek(Context c) {
+    public static int weekForDate(Context c, long millis) {
         long start = getStartMillis(c);
-        Calendar today = Calendar.getInstance();
-        long diff = today.getTimeInMillis() - start;
+        long diff = millis - start;
         if (diff < 0) return 1;
         int days = (int) (diff / (1000L * 60 * 60 * 24));
         return days / 7 + 1;
+    }
+
+    public static int currentWeek(Context c) {
+        return weekForDate(c, System.currentTimeMillis());
     }
 
     public static String dateText(Context c, int week, int day) {

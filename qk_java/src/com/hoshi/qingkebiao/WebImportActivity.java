@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.os.Environment;
 import android.view.View;
 import android.webkit.CookieManager;
@@ -14,8 +16,10 @@ import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -106,25 +110,44 @@ public class WebImportActivity extends Activity {
         web = findViewById(R.id.webview);
         final View controlsPanel = findViewById(R.id.controls_panel);
         final EditText etUrl = findViewById(R.id.et_school_url);
-        ((Button) findViewById(R.id.btn_toggle_ua)).setOnClickListener(v -> {
-            desktopMode = !desktopMode;
+        final CheckBox cbDesktop = findViewById(R.id.cb_desktop_mode);
+        cbDesktop.setChecked(desktopMode);
+        cbDesktop.setOnCheckedChangeListener((v, checked) -> {
+            desktopMode = checked;
             applyDisplayMode(true);
         });
         ((Button) findViewById(R.id.btn_reset_zoom)).setOnClickListener(v -> {
             web.setInitialScale(100);
             web.reload();
-            Toast.makeText(this, "已重置页面缩放", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "已刷新页面", Toast.LENGTH_SHORT).show();
         });
-        ((Button) findViewById(R.id.btn_toggle_controls)).setOnClickListener(v -> {
-            if (controlsPanel.getVisibility() == View.GONE) {
-                controlsPanel.setVisibility(View.VISIBLE);
-            } else {
-                controlsPanel.setVisibility(View.GONE);
-            }
+        final Button btnToggleControls = findViewById(R.id.btn_toggle_controls);
+        updateControlsButton(btnToggleControls, controlsPanel.getVisibility() != View.GONE);
+        btnToggleControls.setOnClickListener(v -> {
+            boolean expand = controlsPanel.getVisibility() == View.GONE;
+            controlsPanel.setVisibility(expand ? View.VISIBLE : View.GONE);
+            updateControlsButton(btnToggleControls, expand);
         });
         SharedPreferences sp = getSharedPreferences("qingkebiao", MODE_PRIVATE);
         String savedUrl = sp.getString(PREF_SCHOOL_URL, "");
         etUrl.setText(savedUrl);
+        etUrl.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String url = s.toString().trim();
+                if (!url.isEmpty()) {
+                    sp.edit().putString(PREF_SCHOOL_URL, url).apply();
+                }
+            }
+        });
 
         Spinner schoolSpinner = findViewById(R.id.sp_school_preset);
         ArrayAdapter<String> presetAdapter = new ArrayAdapter<>(this,
@@ -152,6 +175,10 @@ public class WebImportActivity extends Activity {
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
+        TextView spinnerArrow = findViewById(R.id.tv_spinner_arrow);
+        if (spinnerArrow != null) {
+            spinnerArrow.setOnClickListener(v -> schoolSpinner.performClick());
+        }
         WebSettings s = web.getSettings();
         s.setJavaScriptEnabled(true);
         s.setDomStorageEnabled(true);
@@ -185,8 +212,14 @@ public class WebImportActivity extends Activity {
             web.setInitialScale(desktopMode ? 100 : 100);
             web.loadUrl(url);
             controlsPanel.setVisibility(View.GONE);
+            updateControlsButton(btnToggleControls, false);
         });
         ((Button) findViewById(R.id.btn_import_schedule)).setOnClickListener(v -> importCurrentPage());
+    }
+
+    private void updateControlsButton(Button btn, boolean expanded) {
+        if (btn == null) return;
+        btn.setText(expanded ? "设置网址 ▴" : "设置网址 ▾");
     }
 
     private void applyDisplayMode(boolean reload) {
@@ -200,13 +233,11 @@ public class WebImportActivity extends Activity {
             s.setUseWideViewPort(true);
             s.setLoadWithOverviewMode(false);
             web.setInitialScale(100);
-            ((Button) findViewById(R.id.btn_toggle_ua)).setText("手机版");
         } else {
             s.setUserAgentString(MOBILE_UA);
             s.setUseWideViewPort(false);
             s.setLoadWithOverviewMode(true);
             web.setInitialScale(100);
-            ((Button) findViewById(R.id.btn_toggle_ua)).setText("电脑版");
         }
         if (reload && web.getUrl() != null) {
             web.reload();

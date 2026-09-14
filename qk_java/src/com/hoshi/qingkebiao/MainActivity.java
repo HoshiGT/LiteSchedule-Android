@@ -67,7 +67,7 @@ public class MainActivity extends Activity {
         weekPager = findViewById(R.id.week_pager);
 
         ((ImageButton) findViewById(R.id.btn_settings)).setOnClickListener(v -> startActivity(new Intent(this, SettingsActivity.class)));
-        ((Button) findViewById(R.id.btn_go_import)).setOnClickListener(v -> startActivity(new Intent(this, SettingsActivity.class)));
+        ((Button) findViewById(R.id.btn_go_import)).setOnClickListener(v -> startActivity(new Intent(this, ImportActivity.class)));
         ((Button) findViewById(R.id.btn_prev_week)).setOnClickListener(v -> changeWeek(-1));
         ((Button) findViewById(R.id.btn_next_week)).setOnClickListener(v -> changeWeek(1));
         // 回到真实当前周：每次冷启动/重启 App 都回到本周，不保留上次手动翻到的周
@@ -186,6 +186,7 @@ public class MainActivity extends Activity {
         int availableWidth = getResources().getDisplayMetrics().widthPixels - timeW - dp(16);
         float colW = availableWidth / 7f;
         final int maxSec = maxSection;
+        final View[] bubbleHolder = new View[1];
 
         for (Course c : weekCourses) {
             TextView bubble = new TextView(this);
@@ -212,7 +213,11 @@ public class MainActivity extends Activity {
             final int dayFinal = c.day;
             List<Course> single = new ArrayList<>();
             single.add(c);
-            bubble.setOnClickListener(v -> showCourseDialog(single, secFinal, dayFinal));
+            bubble.setOnClickListener(v -> {
+                // 点击已有课程时，同时取消正在显示的快速加课气泡
+                dismissQuickBubble(dataArea, bubbleHolder);
+                showCourseDialog(single, secFinal, dayFinal);
+            });
             dataArea.addView(bubble, lp);
         }
 
@@ -221,7 +226,6 @@ public class MainActivity extends Activity {
         final int[] quickDay = new int[]{1};
         final int[] quickStart = new int[]{1};
         final int[] quickEnd = new int[]{1};
-        final View[] bubbleHolder = new View[1];
         dataArea.setOnTouchListener((v, event) -> {
             if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
                 lastTap[0] = event.getX();
@@ -229,14 +233,16 @@ public class MainActivity extends Activity {
                 quickDay[0] = clampDay((int) (lastTap[0] / colW) + 1);
                 quickStart[0] = clampSection((int) (lastTap[1] / rowH) + 1, maxSec);
                 quickEnd[0] = quickStart[0];
-                bubbleHolder[0] = showQuickBubble(dataArea, quickDay[0], quickStart[0], quickEnd[0], rowH, colW);
             }
             return false;
         });
         dataArea.setClickable(true);
         dataArea.setOnClickListener(v -> {
-            // 点击空白只显示气泡，不立刻进入新增页；点气泡里的 + 或拖完成才进入
-            if (bubbleHolder[0] == null) {
+            // 已有气泡时，再点空白处取消上一次快速添加，不在新位置生成气泡
+            if (bubbleHolder[0] != null) {
+                dismissQuickBubble(dataArea, bubbleHolder);
+            } else {
+                // 点击空白只显示气泡，不立刻进入新增页；点气泡里的 + 或拖完成才进入
                 bubbleHolder[0] = showQuickBubble(dataArea, quickDay[0], quickStart[0], quickEnd[0], rowH, colW);
             }
         });
@@ -282,6 +288,21 @@ public class MainActivity extends Activity {
         lp.topMargin = (int) ((start - 1) * rowH + dp(4));
         lp.height = (int) ((end - start + 1) * rowH - dp(8));
         bubble.setLayoutParams(lp);
+    }
+
+    private void dismissQuickBubble(FrameLayout area, View[] bubbleHolder) {
+        if (bubbleHolder == null || bubbleHolder[0] == null) return;
+        View bubble = bubbleHolder[0];
+        if (bubble.getParent() == area) {
+            area.removeView(bubble);
+        }
+        for (int i = area.getChildCount() - 1; i >= 0; i--) {
+            View child = area.getChildAt(i);
+            if (child != bubble && "quick_handle".equals(child.getTag())) {
+                area.removeViewAt(i);
+            }
+        }
+        bubbleHolder[0] = null;
     }
 
     private TableLayout createWeekTable(List<Course> weekCourses) {
@@ -589,6 +610,7 @@ public class MainActivity extends Activity {
 
         // 拖钮改为气泡右侧外置竖条
         final TextView handle = new TextView(this);
+        handle.setTag("quick_handle");
         handle.setText("▲\n▼");
         handle.setTextSize(9);
         handle.setTextColor(0xFFFFFFFF);

@@ -186,7 +186,7 @@ cd build && zip -q base.apk classes.dex && cd ..
 ## 四、已知坑
 - `/home` 挂载是只读的，Gradle 默认用户目录不可写，所以新项目改为纯命令行构建，不用 Gradle。
 - 目前赞赏解锁是“在线优先、离线回退”方案：优先请求 `https://schedule.hoshichan.moe/api/qingkebiao/unlock`；服务端未接入或断网时，回退到设备码/激活码离线解锁。离线 secret 写在 APK 里，防君子不防逆向；后续服务端接口稳定后可考虑只留联网验证。
-- 在线解锁服务已部署在 `<服务器IP>`：
+- 在线解锁服务已部署在 `155.103.157.120`：
   - Node 服务：`/opt/qk-server/server.js`
   - 配置：`/opt/qk-server/config.json`（内含 adminToken）
   - 数据：`/opt/qk-server/unlocks.json`
