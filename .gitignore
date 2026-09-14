@@ -1,7 +1,9 @@
 # Build artifacts
 qk_java/build/
-qk_java/gen/
 qk_java/classes/
+# gen/androidx.*/R.java 是预生成入库的：干净克隆必须靠它才能编出完整包
+# （缺了它会编出没有 AndroidX R 类的残缺 APK，运行时崩）。只忽略 app 自己的 R.java。
+qk_java/gen/com/
 *.log
 *.apk
 *.idsig
