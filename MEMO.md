@@ -3,11 +3,15 @@
 ## 当前状态
 
 - App 名：`LiteSchedule`
-- 版本：`1.0.3`（versionCode 4，`/home/hoshi/Kebiao/qingkebiao_v1.0.3.apk`，已装到测试机）
+- 版本：**`1.0.4`**（versionCode 5，`qingkebiao_v1.0.4.apk`，两台真机都已装）
 - GitHub：https://github.com/HoshiGT/LiteSchedule-Android
-- 赞赏/在线解锁：https://schedule.hoshichan.moe
-- 测试机无线 ADB：`192.168.8.107:38559`（端口已从 40877 改为 38559）
-  - ⚠️ 验收时误执行 `svc wifi disable`，手机 WiFi 被关、ADB 断开，需手动重开 WiFi 后再 `adb connect`
+- Release：**v1.0.4**（tag + release 已推，APK 作为 release 附件）
+  https://github.com/HoshiGT/LiteSchedule-Android/releases/tag/v1.0.4
+- 镜像下载：https://schedule.hoshichan.moe/LiteSchedule-v1.0.4.apk （站点首页也已指向 v1.0.4）
+- 赞赏/在线解锁服务：`155.103.157.120:/opt/qk-server/server.js`，**已部署新版**（含 pending 接口）
+- 真机：
+  - OnePlus 8T `192.168.8.107:38283`（有 root，可 `date -s` 做时间穿越）
+  - 荣耀 LSA-AN00 `192.168.8.201:37859`（无 root）
   - 赞赏页解锁状态存在 `shared_prefs/qingkebiao.xml` 的 `background_unlocked`；
     但每次打开赞赏页都会联网复查，服务端说 true 会把它改回 true
 
@@ -27,7 +31,7 @@
 - 服务器下载统计（仅管理员可查看）：`server/server.js` / `server/download-stats.js`
 - 开源仓库 / 赞赏入口已分离
 
-## v1.0.3 新增：赞赏判定（登记-确认）流程
+## v1.0.3 新增、v1.0.4 发布：赞赏判定（登记-确认）流程
 
 不再靠「聊天发设备码 + 算激活码」，改为：
 
@@ -47,41 +51,39 @@
 ## 构建
 
 ```bash
-cd /home/hoshi/Kebiao/qk_java
-# 详细构建命令见 HANDOFF.md（aapt2 compile/link -> javac -> d8 -> zip dex -> apksigner）
-# v1.0.3 已用 versionCode 4 / versionName 1.0.3 构建并签名（证书同前，可覆盖安装）
+cd qk_java
+./build.sh                                  # 默认 5 / 1.0.4，输出 ../qingkebiao.apk
+VERSION_CODE=6 VERSION_NAME=1.0.5 OUT=../qingkebiao_v1.0.5.apk ./build.sh
 ```
 
-## 明天待办（重要）
+⚠️ **构建两个坑（2026-09-14 踩过）**：
+1. `gen/androidx.{core,customview,recyclerview,viewpager2}/R.java` 是**预生成入库**的
+   （之前被 gitignore，导致"干净克隆"编出来的 APK 缺少 AndroidX 的 R 类，装上会崩）。
+   已改：`.gitignore` 只忽略 `qk_java/gen/com/`，AndroidX 那四个 R.java 已入库。
+   构建时**不要 `rm -rf gen/`**，`build.sh` 只重建 `gen/com`。
+2. `res/drawable/mm_reward_qrcode.png` 在 index 里被标了 **skip-worktree**：
+   仓库内是脱敏版（300×300），本地构建用完整版（943×943）。
+   所以干净克隆构建出的 APK 只在这张图上不同（体积差约 118KB），**代码部分 dex md5 完全一致**。
 
-1. **服务器 SSH 已确认可用**（2026-09-08 验收时实测）：
-   - 真实服务器是 `155.103.157.120`（工作区 HANDOFF.md 第 189 行，未提交、勿写进公开仓库）
-   - `ssh root@155.103.157.120`（默认密钥 `~/.ssh/id_ed25519`）可登录
-   - ⚠️ `cancon.hpccube.com:65023`（ssh config 里的 `kunshan`）是**昆山超算集群，不是本项目服务器**，之前记的"VPS SSH 挂了"是判错主机
-   - ⚠️ 连续多次失败登录会触发服务器 fail2ban，本机 IP 被临时拒连（22 端口 Connection refused），等 10 分钟或让服务器侧解封
-2. **部署服务端**：
-   ```bash
-   scp server/server.js root@155.103.157.120:/opt/qk-server/server.js
-   ssh root@155.103.157.120 'systemctl restart qk-unlock && systemctl is-active qk-unlock'
-   ```
-   部署前新接口是 404（App 点「我已赞赏」会提示登记失败，已验证不会崩）
-3. **部署新 APK**：
-   ```bash
-   cp /home/hoshi/Kebiao/qingkebiao_v1.0.3.apk /var/www/schedule.hoshichan.moe/html/LiteSchedule-v1.0.3.apk
-   ```
-   （nginx 已有 `~ ^/(LiteSchedule-.*\.apk)$` 规则自动 302 到统计入口，无需改配置）
-4. **生产端到端复验**（本地已跑通，这步只是换成生产地址再确认一遍）：
-   - 手机设备码**必须从 App 界面读**（赞赏页显示的那个，本次是 `C9B56FE0`），
-     ⚠️ 不要用 `adb shell settings get secure android_id` 去算，Android 8+ 两者不同
-   - 该设备码当前在生产 `unlocks.json` 里是 `true`，要验"未解锁→登记→确认"得先把它删掉
-   - 流程：赞赏页点「我已赞赏」→ 查 `/api/qingkebiao/pending?token=` 是否收到 → 管理页点「确认赞赏」
-     → 观察 App 在 30 秒内自动解锁（prefs 里 `background_unlocked` 变 true、UI 切到已解锁面板）
-   - 现场恢复：把设备码重新标记解锁（或走确认流程），装回生产 APK
-5. **（建议）把今天这套复测固化成 `server/verify.sh`**：一条命令跑完
+## 待办
+
+1. ~~部署服务端~~ ✅ 2026-09-14 已部署（`/opt/qk-server/server.js` 含 pending 接口，服务 active，
+   外网 `POST /api/qingkebiao/pending` 返回 `{"ok":true}`；旧版已备份为 `server.js.bak.20260914053020`）
+2. ~~部署 APK 到镜像站~~ ✅ 已传 `LiteSchedule-v1.0.4.apk`，站点首页也改成指向 v1.0.4，
+   下载链路（nginx → 统计接口）与下载计数均已验证
+3. **生产端到端复验**（登记→确认→自动解锁）：本地已跑通，生产接口也已上线，
+   但**还没用真机在生产环境完整走一遍**。设备码要从 App 界面读（8T 是 `C9B56FE0`），
+   ⚠️ 不要用 `adb shell settings get secure android_id` 算，Android 8+ 两者不同。
+   该设备码在生产 `unlocks.json` 里已是 `true`，要验"未解锁→登记→确认"得先删掉它。
+4. **（建议）把验收复测固化成 `server/verify.sh`**：一条命令跑完
    顺路径 + 异常路径 + 鉴权 + 队列清理 + 老功能回归，退出码说话，验收不再靠模型自述
-6. （可选，彻底免人工）接聚合支付平台（虎皮椒/易支付，个人收款码即可，费率约 1-2%）：
+5. （可选，彻底免人工）接聚合支付平台（虎皮椒/易支付，个人收款码即可，费率约 1-2%）：
    用户点按钮跳转支付页，平台带签名回调 `POST /api/qingkebiao/pay/notify`，服务端验签后自动解锁。
    server.js 里已留该端点（当前按 HMAC 约定实现，接平台时改成对应验签）
+6. 服务器运维备忘：
+   - `ssh root@155.103.157.120`（默认密钥）可登录；`cancon.hpccube.com:65023`（ssh config 里的 `kunshan`）
+     是**昆山超算集群、不是本项目服务器**
+   - 连续多次失败登录会触发 fail2ban，本机 IP 被临时拒连（22 端口 Connection refused）
 
 ## 端到端验收结果（2026-09-08，真机 + 本地服务端）
 
