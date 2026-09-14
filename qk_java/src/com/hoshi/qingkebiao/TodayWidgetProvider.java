@@ -41,6 +41,13 @@ public class TodayWidgetProvider extends AppWidgetProvider {
     private static final int HEADER_DP = 60;
     /** 每行课程大约占的高度（10dp 内边距 + 文字 + 4dp 间隔），单位 dp */
     private static final int ROW_DP = 40;
+    /**
+     * 低于这个高度就认为启动器上报的值不可信，按这个高度算。
+     * 实测荣耀(HONOR)启动器只上报默认最小值 110dp，不随实际尺寸更新，
+     * 而小组件实际有 185dp —— 不兜底就会算成「只够 1 行」。
+     * 180dp = 头部 60dp + 3 行课程，也是默认放置尺寸下能正常显示的行数。
+     */
+    private static final int MIN_TRUSTED_HEIGHT_DP = 180;
 
     private static final int[] ITEM_IDS = {
             R.id.widget_item_0, R.id.widget_item_1, R.id.widget_item_2,
@@ -114,10 +121,8 @@ public class TodayWidgetProvider extends AppWidgetProvider {
             }
         } catch (Exception ignored) {
         }
-        if (heightDp <= 0) {
-            return MAX_ROWS;
-        }
-        int fit = (heightDp - HEADER_DP) / ROW_DP;
+        int effective = Math.max(heightDp, MIN_TRUSTED_HEIGHT_DP);
+        int fit = (effective - HEADER_DP) / ROW_DP;
         // 至少 1 行，最多布局里预留的行数
         return Math.max(1, Math.min(MAX_ROWS, fit));
     }
@@ -152,12 +157,21 @@ public class TodayWidgetProvider extends AppWidgetProvider {
         }
         db.close();
 
-        int shown = Math.min(today.size(), Math.min(capacity, MAX_ROWS));
+        int cap = Math.max(1, Math.min(capacity, MAX_ROWS));
+        int shown = Math.min(today.size(), cap);
         boolean overflow = today.size() > shown;
+        boolean inlineHint = false;
         if (overflow) {
-            // 留一行给「还有 N 门课」
-            shown = Math.max(0, Math.min(today.size(), Math.min(capacity, MAX_ROWS) - 1));
-            overflow = today.size() > shown;
+            if (cap >= 2) {
+                // 留一行给「还有 N 门课」
+                shown = Math.max(0, Math.min(today.size(), cap - 1));
+                overflow = today.size() > shown;
+            } else {
+                // 只够一行：优先显示第一门课，溢出提示并到这一行的信息里，不再单独占一行
+                shown = Math.min(today.size(), 1);
+                inlineHint = true;
+                overflow = false;
+            }
         }
 
         for (int i = 0; i < ITEM_IDS.length; i++) {
@@ -165,7 +179,11 @@ public class TodayWidgetProvider extends AppWidgetProvider {
                 Course c = today.get(i);
                 views.setViewVisibility(ITEM_IDS[i], View.VISIBLE);
                 views.setTextViewText(ITEM_NAME_IDS[i], c.name);
-                views.setTextViewText(ITEM_INFO_IDS[i], courseInfo(c));
+                String info = courseInfo(c);
+                if (inlineHint && i == shown - 1) {
+                    info = info + " · 还有" + (today.size() - shown) + "门";
+                }
+                views.setTextViewText(ITEM_INFO_IDS[i], info);
                 views.setInt(ITEM_IDS[i], "setBackgroundResource", bubbleFor(c.name));
             } else if (i == shown && overflow) {
                 views.setViewVisibility(ITEM_IDS[i], View.VISIBLE);

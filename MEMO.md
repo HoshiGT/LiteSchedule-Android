@@ -137,6 +137,15 @@ App 被系统冻结/回收时（ColorOS 的 `OplusHansManager` 日志能看到 `
 已知小限制：把系统时间**往回调**时小组件不会自动刷新（往回调不会触发已排定的闹钟，
 ColorOS 还会吞掉系统广播），点一下箭头或等下一次更新即可；正常使用遇不到。
 
+**荣耀（HONOR LSA-AN00 / Android 14，无 root）实机确认**：
+- 装 v1.0.2 时复现了同一 bug：`2026/09/14 第3周 周一` + `今日无课`，
+  而 App 内明明写着「第3周 · 本周课程（12门）」→ 确诊是小组件渲染链路问题，不是数据空
+- 装 v1.0.4 后：`第3周 周一` + **计算机图形学 / 印刷化学与材料 / 跨媒体信息技术** 三门课全部正常显示
+- ⚠️ **荣耀启动器只上报默认最小高度 110dp，不随实际尺寸更新**（实际小组件高 554px ≈ 185dp），
+  照上报值算会得出「只够 1 行」→ 已加兜底常量 `MIN_TRUSTED_HEIGHT_DP = 180`
+  （低于此值一律按 180dp 算，即头部 60dp + 3 行课程）
+- 无 root 的机器不能 `date -s` 改时间，验证跨周只能靠真机等时间到点或换有 root 的机器
+
 验证技巧：shell(uid 2000) 不能发 `DATE_CHANGED` 这种受保护广播，
 要模拟"午夜刷新"用自定义 action：`am broadcast -a com.hoshi.qingkebiao.WIDGET_DAY_TICK -n com.hoshi.qingkebiao/.TodayWidgetProvider`
 
