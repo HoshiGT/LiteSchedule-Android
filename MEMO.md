@@ -103,6 +103,35 @@ VERSION_CODE=6 VERSION_NAME=1.0.5 OUT=../qingkebiao_v1.0.5.apk ./build.sh
 用 `adb shell settings get secure android_id` 算出来的设备码和 App 内的**不是同一个**，
 验证时要直接从 App 界面读设备码。
 
+## 小组件最后一行被裁（2026-09-15 已修，v1.0.5）
+
+**现象**：小组件最下面那节课显示不全，第三节课的文字被截断一半。
+
+**根因**：课程行原来是 `wrap_content` + 固定内边距（自然高度 113px），
+而 `LinearLayout` **不会压缩** `wrap_content` 的子项——容器只有 352px，塞 3 行需要 375px，
+最后一行被按剩余空间重新测量，从 113px 压到 90px，文字从 53px 裁到 30px。
+（荣耀 LSA-AN00 实测：行高 113/113/**90**，文字 53/53/**30**）
+
+**修法**：课程行改成**等分权重**（`layout_height=0dp` + `layout_weight=1`），
+可用高度由所有可见子项平分，最后一行不再被单独压缩；
+内边距 10dp → 8dp（保证压缩后文字仍放得下）；
+再放 5 个「空格占位」（同样权重、默认 GONE），课少时按 `cap - 可见行数` 显示，
+避免只有一门课时那行被撑成一个大泡泡。
+
+**实测对比（荣耀）**：
+| | 修复前 v1.0.4 | 修复后 v1.0.5 |
+|---|---|---|
+| 行1 | 113px / 文字 53px ✓ | 105px / 文字 53px ✓ |
+| 行2 | 113px / 文字 53px ✓ | 105px / 文字 53px ✓ |
+| 行3 | **90px / 文字 30px ✗** | **106px / 文字 53px ✓** |
+
+⚠️ **踩坑（自己引入又修掉的）**：空格最初写成了 `<View>`，
+但 **RemoteViews 只允许有限几种控件，`android.view.View` 不在白名单**，
+会导致布局 `InflateException: Class not allowed to be inflated`，
+启动器直接报「無法新增小工具」。
+已全部换成 `LinearLayout`。**以后往 `widget_*.xml` 加控件前先确认在 RemoteViews 白名单内**
+（FrameLayout / LinearLayout / RelativeLayout / TextView / ImageView / Button / ProgressBar / ListView / …）。
+
 ## 小组件「有课却显示没课」bug（2026-09-14 已修，v1.0.4）
 
 **现象**：跨到新的一周后，今日课程小组件一直显示「今日无课 / 明日无课」；

@@ -66,12 +66,13 @@
             android:gravity="center_vertical"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
             android:layout_marginBottom="4dp"
             android:visibility="gone"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="0dp"
+            android:layout_weight="1">
             <TextView
                 android:id="@+id/widget_item_name_0"
                 android:textColor="#2D3142"
@@ -95,12 +96,13 @@
             android:gravity="center_vertical"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
             android:layout_marginBottom="4dp"
             android:visibility="gone"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="0dp"
+            android:layout_weight="1">
             <TextView
                 android:id="@+id/widget_item_name_1"
                 android:textColor="#2D3142"
@@ -124,12 +126,13 @@
             android:gravity="center_vertical"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
             android:layout_marginBottom="4dp"
             android:visibility="gone"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="0dp"
+            android:layout_weight="1">
             <TextView
                 android:id="@+id/widget_item_name_2"
                 android:textColor="#2D3142"
@@ -153,12 +156,13 @@
             android:gravity="center_vertical"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
             android:layout_marginBottom="4dp"
             android:visibility="gone"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="0dp"
+            android:layout_weight="1">
             <TextView
                 android:id="@+id/widget_item_name_3"
                 android:textColor="#2D3142"
@@ -182,12 +186,13 @@
             android:gravity="center_vertical"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
             android:layout_marginBottom="4dp"
             android:visibility="gone"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="0dp"
+            android:layout_weight="1">
             <TextView
                 android:id="@+id/widget_item_name_4"
                 android:textColor="#2D3142"
@@ -216,7 +221,8 @@
             android:paddingBottom="6dp"
             android:visibility="gone"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="0dp"
+            android:layout_weight="1">
             <TextView
                 android:id="@+id/widget_item_name_5"
                 android:textColor="#2D3142"
@@ -233,6 +239,28 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </LinearLayout>
+
+        <!--
+          占位空格：课程行是等分权重（0dp + weight=1），可用高度由所有可见子项平分。
+          课少时把剩余名额用这些空格填上，行高才不会撑变形（比如只有一门课时变成一个大胖泡泡）。
+        -->
+        <!-- 注意：RemoteViews 只允许有限的几种控件，android.view.View 不在白名单里
+             （会 InflateException: Class not allowed to be inflated），所以空格用 LinearLayout -->
+        <LinearLayout android:id="@+id/widget_spacer_0" android:orientation="vertical"
+            android:layout_width="match_parent" android:layout_height="0dp"
+            android:layout_weight="1" android:visibility="gone" />
+        <LinearLayout android:id="@+id/widget_spacer_1" android:orientation="vertical"
+            android:layout_width="match_parent" android:layout_height="0dp"
+            android:layout_weight="1" android:visibility="gone" />
+        <LinearLayout android:id="@+id/widget_spacer_2" android:orientation="vertical"
+            android:layout_width="match_parent" android:layout_height="0dp"
+            android:layout_weight="1" android:visibility="gone" />
+        <LinearLayout android:id="@+id/widget_spacer_3" android:orientation="vertical"
+            android:layout_width="match_parent" android:layout_height="0dp"
+            android:layout_weight="1" android:visibility="gone" />
+        <LinearLayout android:id="@+id/widget_spacer_4" android:orientation="vertical"
+            android:layout_width="match_parent" android:layout_height="0dp"
+            android:layout_weight="1" android:visibility="gone" />
     </LinearLayout>
 
     <TextView

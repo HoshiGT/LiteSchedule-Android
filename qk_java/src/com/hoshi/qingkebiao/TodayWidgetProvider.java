@@ -39,8 +39,12 @@ public class TodayWidgetProvider extends AppWidgetProvider {
     private static final int MAX_ROWS = 6;
     /** 头部（日期 + 周次 + 箭头 + 外边距）大约占的高度，单位 dp */
     private static final int HEADER_DP = 60;
-    /** 每行课程大约占的高度（10dp 内边距 + 文字 + 4dp 间隔），单位 dp */
-    private static final int ROW_DP = 40;
+    /**
+     * 每行课程**至少**要占的高度（8dp 内边距 ×2 + 一行 12sp 文字 + 4dp 间隔），单位 dp。
+     * 课程行本身是等分权重（0dp + weight=1），实际高度 = 可用高度 / 可见子项数，
+     * 这里只用来估算「大概放得下几行」，不再直接把行高定死。
+     */
+    private static final int ROW_DP = 36;
     /**
      * 低于这个高度就认为启动器上报的值不可信，按这个高度算。
      * 实测荣耀(HONOR)启动器只上报默认最小值 110dp，不随实际尺寸更新，
@@ -60,6 +64,11 @@ public class TodayWidgetProvider extends AppWidgetProvider {
     private static final int[] ITEM_INFO_IDS = {
             R.id.widget_item_info_0, R.id.widget_item_info_1, R.id.widget_item_info_2,
             R.id.widget_item_info_3, R.id.widget_item_info_4, R.id.widget_item_info_5
+    };
+    /** 课程行是等分权重，课少时用这些空格补齐，避免行高被撑变形 */
+    private static final int[] SPACER_IDS = {
+            R.id.widget_spacer_0, R.id.widget_spacer_1, R.id.widget_spacer_2,
+            R.id.widget_spacer_3, R.id.widget_spacer_4
     };
     private static final int[] BUBBLE_BACKGROUNDS = {
             R.drawable.widget_bubble_0, R.drawable.widget_bubble_1,
@@ -194,6 +203,16 @@ public class TodayWidgetProvider extends AppWidgetProvider {
                 views.setViewVisibility(ITEM_IDS[i], View.GONE);
             }
         }
+
+        // 课程行是等分权重：可见子项数 = 显示的课程行（含「还有 N 门课」行）+ 补齐的空格。
+        // 课少时用空格占位，保证每行高度稳定（否则只有一门课时会被撑成一个大泡泡）。
+        int visibleRows = shown + (overflow ? 1 : 0);
+        int spacers = today.isEmpty() ? 0 : Math.max(0, cap - visibleRows);
+        for (int i = 0; i < SPACER_IDS.length; i++) {
+            views.setViewVisibility(SPACER_IDS[i], i < spacers ? View.VISIBLE : View.GONE);
+        }
+        // 没课时把整个列表容器收起来，让「今日无课」占满空间并居中
+        views.setViewVisibility(R.id.widget_items, today.isEmpty() ? View.GONE : View.VISIBLE);
 
         views.setTextViewText(R.id.widget_empty,
                 offset == 0 ? "今日无课  (⁠*⁠´⁠ω⁠｀⁠*⁠)" : "明日无课  (⁠*⁠´⁠ω⁠｀⁠*⁠)");
