@@ -125,6 +125,19 @@ VERSION_CODE=6 VERSION_NAME=1.0.5 OUT=../qingkebiao_v1.0.5.apk ./build.sh
 | 行2 | 113px / 文字 53px ✓ | 105px / 文字 53px ✓ |
 | 行3 | **90px / 文字 30px ✗** | **106px / 文字 53px ✓** |
 
+**边界场景验证矩阵（8T 有 root，用 `date -s` 穿越 + `am broadcast ... WIDGET_DAY_TICK` 强制刷新）**：
+
+| 场景 | 结果 |
+|---|---|
+| 周二 3 门（8T） | 三行 104/105/105px，文字 49px ✓ |
+| 周二 3 门（荣耀） | 三行 105/105/106px，文字 53px ✓（修复前 113/113/**90**，文字被裁） |
+| **周三 1 门** | 1 行 + **2 个空格占位** ✓ 行高没被撑大 |
+| **周四 4 门（满课）** | 2 门 + 「还有 2 门课…」，三行等高不裁 ✓（小组件只够 3 行） |
+| **周六 0 门（空状态）** | 「今日无课」居中占满 368px，列表容器收起 ✓ |
+
+验完记得把测试机 `settings put global auto_time 1` 恢复自动对时。
+读小组件**不要按 HOME / 不要滑动**——停在那一页直接 `uiautomator dump` 就行（按 HOME 会把界面顶走，滑动可能打乱用户摆好的桌面）。
+
 ⚠️ **踩坑（自己引入又修掉的）**：空格最初写成了 `<View>`，
 但 **RemoteViews 只允许有限几种控件，`android.view.View` 不在白名单**，
 会导致布局 `InflateException: Class not allowed to be inflated`，
