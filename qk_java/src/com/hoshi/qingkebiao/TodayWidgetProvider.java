@@ -166,6 +166,36 @@ public class TodayWidgetProvider extends AppWidgetProvider {
         }
         db.close();
 
+        // Android 12+ ：用可滑动列表，课程多时能划着看全（列表项直接塞进 RemoteViews，不绑定服务）
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !today.isEmpty()) {
+            RemoteViews.RemoteCollectionItems.Builder builder =
+                    new RemoteViews.RemoteCollectionItems.Builder()
+                            .setViewTypeCount(1)
+                            .setHasStableIds(true);
+            for (Course c : today) {
+                RemoteViews item = new RemoteViews(context.getPackageName(), R.layout.widget_course_item);
+                item.setTextViewText(R.id.widget_course_name, c.name);
+                item.setTextViewText(R.id.widget_course_info, courseInfo(c));
+                item.setInt(R.id.widget_course_item, "setBackgroundResource", bubbleFor(c.name));
+                builder.addItem(c.id, item);
+            }
+            views.setRemoteAdapter(R.id.widget_list, builder.build());
+            views.setViewVisibility(R.id.widget_list, View.VISIBLE);
+            // 静态行方案整体收起
+            views.setViewVisibility(R.id.widget_items, View.GONE);
+            for (int i = 0; i < ITEM_IDS.length; i++) {
+                views.setViewVisibility(ITEM_IDS[i], View.GONE);
+            }
+            for (int sid : SPACER_IDS) {
+                views.setViewVisibility(sid, View.GONE);
+            }
+            views.setTextViewText(R.id.widget_empty, offset == 0
+                    ? "今日无课  (⁠*⁠´⁠ω⁠｀⁠*⁠)" : "明日无课  (⁠*⁠´⁠ω⁠｀⁠*⁠)");
+            views.setViewVisibility(R.id.widget_empty, View.GONE);
+            return finishViews(context, views, offset);
+        }
+        views.setViewVisibility(R.id.widget_list, View.GONE);
+
         int cap = Math.max(1, Math.min(capacity, MAX_ROWS));
         int shown = Math.min(today.size(), cap);
         boolean overflow = today.size() > shown;
@@ -218,11 +248,18 @@ public class TodayWidgetProvider extends AppWidgetProvider {
                 offset == 0 ? "今日无课  (⁠*⁠´⁠ω⁠｀⁠*⁠)" : "明日无课  (⁠*⁠´⁠ω⁠｀⁠*⁠)");
         views.setViewVisibility(R.id.widget_empty, today.isEmpty() ? View.VISIBLE : View.GONE);
 
+        return finishViews(context, views, offset);
+    }
+
+    /** 统一的点击事件：点小组件打开 App，点箭头在「今天 / 明天」之间切换 */
+    private static RemoteViews finishViews(Context context, RemoteViews views, int offset) {
         Intent open = new Intent(context, MainActivity.class);
         open.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent openPi = PendingIntent.getActivity(context, 0, open,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-        views.setOnClickPendingIntent(R.id.widget_root, openPi);
+        // 只让头部和「无课」提示可点：整个根布局可点会让列表滑动时触发启动器的按压动效
+        views.setOnClickPendingIntent(R.id.widget_header, openPi);
+        views.setOnClickPendingIntent(R.id.widget_empty, openPi);
 
         if (offset == 0) {
             views.setTextViewText(R.id.widget_arrow, "→");

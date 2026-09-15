@@ -103,6 +103,31 @@ VERSION_CODE=6 VERSION_NAME=1.0.5 OUT=../qingkebiao_v1.0.5.apk ./build.sh
 用 `adb shell settings get secure android_id` 算出来的设备码和 App 内的**不是同一个**，
 验证时要直接从 App 界面读设备码。
 
+## 小组件改成可滑动列表（2026-09-15，v1.0.5）
+
+**需求**：满课（4 门以上）时不要显示「还有 N 门课…」，要能**滑动看全**。
+
+**做法**：Android 12（API 31）提供了 `RemoteViews.setRemoteAdapter(viewId, RemoteCollectionItems)`，
+可以把列表项**直接塞进 RemoteViews**——既能滑动，又**不需要绑定 RemoteViewsService**
+（正好绕开「App 被冻结 → 服务绑不上 → 列表空」那个老坑）。注意这个重载**不带 appWidgetId**。
+
+- API ≥ 31：`widget_list`（ListView）+ `RemoteCollectionItems`（每项一个 `widget_course_item` RemoteViews）
+- API < 31：退回静态行方案（`widget_items` + 空格占位 + 「还有 N 门课…」）
+
+**顺带修掉的交互 bug**：原来「打开 App」的点击挂在**根布局**上，
+导致在列表上滑动时启动器会当成"按下了小组件"——播放**点击缩小动效**、还抢滚动手势。
+改成只把点击挂在**头部**（`widget_header`）和「今日无课」提示上，列表区域就干净了。
+
+**验证矩阵（8T，`date -s` 穿越 + `WIDGET_DAY_TICK` 广播刷新）**：
+
+| 场景 | 结果 |
+|---|---|
+| 周二 3 门 | 列表 3 项 ✓ |
+| **周四 4 门（满课）** | 3 项可见 + **列表内滑动划出第 4 门** ✓（滑动不再翻页/开抽屉） |
+| 周六 0 门 | 「今日无课」，列表收起 ✓ |
+| `am kill` 杀掉 App 进程 | 列表照常显示 ✓（静态下发，不怕冻结） |
+| 点击头部 | 打开 App ✓（`mCurrentFocus=…MainActivity`） |
+
 ## 小组件最后一行被裁（2026-09-15 已修，v1.0.5）
 
 **现象**：小组件最下面那节课显示不全，第三节课的文字被截断一半。
