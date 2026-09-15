@@ -230,6 +230,16 @@ ColorOS 还会吞掉系统广播），点一下箭头或等下一次更新即可
 5. 轮询只在赞赏页前台且未解锁时进行；用户登记后若离开该页，要等下次打开才会解锁（可接受，但要知道）
 6. `POST /pending` 仍无频率限制（只挡了队列满）；要更稳可按 IP 限流
 
+## DSH 图像输入（2026-09-15 已开）
+
+Flash 4.1（`deepseek-flash`）**上游其实支持图像**（实测红/蓝纯色图能正确识别），
+但 `~/.dsh/settings.yaml` 里这条模型没声明 `inputModalities`，DSH 就按纯文本处理
+（`dsh-llm-deepseek/lib/index.js:1286` 默认 `["text"]`，`:1585` 会把图片换成占位文本）。
+
+已在 settings.yaml 给 `deepseek-flash` 和运行时快照 id `deepseek-v4.1-flash-expires-on-0910`
+补上 `inputModalities: [text, image]` + `imagePixelBudget/imageMaxBytes`，**重启 dsh web 后生效**（已验证）。
+备份：`~/.dsh/settings.yaml.bak-20260914134724`。
+
 ## 本地模型（Qwen3 Q3_K_M + Q4 KV / 128K）的已知退化点
 
 本次验收看到的失败模式都指向"长程召回差 + 过早下结论"，与量化策略吻合：
