@@ -3,11 +3,11 @@
 ## 当前状态
 
 - App 名：`LiteSchedule`
-- 版本：**`1.0.4`**（versionCode 5，`qingkebiao_v1.0.4.apk`，两台真机都已装）
+- 版本：**`1.0.5`**（versionCode 6，`qingkebiao_v1.0.5.apk`，两台真机都已装）
 - GitHub：https://github.com/HoshiGT/LiteSchedule-Android
-- Release：**v1.0.4**（tag + release 已推，APK 作为 release 附件）
-  https://github.com/HoshiGT/LiteSchedule-Android/releases/tag/v1.0.4
-- 镜像下载：https://schedule.hoshichan.moe/LiteSchedule-v1.0.4.apk （站点首页也已指向 v1.0.4）
+- Release：**v1.0.5**（tag + release 已推，APK 作为 release 附件，1046164 字节 / md5 `cb77bcd6`）
+  https://github.com/HoshiGT/LiteSchedule-Android/releases/tag/v1.0.5
+- 镜像下载：https://schedule.hoshichan.moe/LiteSchedule-v1.0.5.apk （站点首页也已指向 v1.0.5，下载统计已计数）
 - 赞赏/在线解锁服务：`155.103.157.120:/opt/qk-server/server.js`，**已部署新版**（含 pending 接口）
 - 真机：
   - OnePlus 8T `192.168.8.107:38283`（有 root，可 `date -s` 做时间穿越）
